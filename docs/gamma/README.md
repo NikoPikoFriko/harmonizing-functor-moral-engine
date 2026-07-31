@@ -14,3 +14,6 @@ Gamma API auth was unavailable at generation time. Use these outlines in [Gamma]
 **Rules:** no gore · no correct answers · dual engines honest · decreasing certainty labeled.
 
 After reconnecting Gamma in Grok, say **`gamma generate all-core`** to auto-build from these files.
+| **G** Stereokognicja | [G-stereokognicja.md](./G-stereokognicja.md) | presentation 16×9 | 8 |
+
+After reconnecting Gamma: `gamma generate stereokognicja` or `gamma generate all-core`.

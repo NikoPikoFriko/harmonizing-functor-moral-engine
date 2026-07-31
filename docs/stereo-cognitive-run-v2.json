@@ -1,0 +1,83 @@
+{
+  "skill": "Meta-Gra Stereokognicyjna v1.0",
+  "pipeline": "O → stereo → transmit",
+  "runAt": "2026-07-31T04:56:15.931Z",
+  "ui": "After Turn 1 commit: DualEngines + Stereo META bar (mode · div · L · R · you)",
+  "triggers": [
+    "meta-gra",
+    "stereokognicja",
+    "RUN"
+  ],
+  "rows": [
+    {
+      "scenario": "Lab default post-T1 (herd 55, default matrix)",
+      "L": "pull",
+      "R": "refuse",
+      "mode": "META-BREAK",
+      "meaning": "R refuses loaded frame — meta-game open",
+      "div": 31,
+      "user": null,
+      "userVs": null
+    },
+    {
+      "scenario": "User pulls with default matrix",
+      "L": "pull",
+      "R": "refuse",
+      "mode": "META-BREAK",
+      "meaning": "R refuses loaded frame — meta-game open",
+      "div": 31,
+      "user": "pull",
+      "userVs": {
+        "vsL": "align-L",
+        "vsR": "diverge-R"
+      }
+    },
+    {
+      "scenario": "User stays deontic matrix",
+      "L": "pull",
+      "R": "stay",
+      "mode": "PARALLAX",
+      "meaning": "Stereo conflict — depth appears; do not collapse",
+      "div": 90,
+      "user": "stay",
+      "userVs": {
+        "vsL": "diverge-L",
+        "vsR": "align-R"
+      }
+    },
+    {
+      "scenario": "User refuses high autonomy",
+      "L": "pull",
+      "R": "refuse",
+      "mode": "META-BREAK",
+      "meaning": "R refuses loaded frame — meta-game open",
+      "div": 90,
+      "user": "refuse",
+      "userVs": {
+        "vsL": "diverge-L",
+        "vsR": "align-R"
+      }
+    },
+    {
+      "scenario": "Fusion util+herd",
+      "L": "pull",
+      "R": "pull",
+      "mode": "FUSION",
+      "meaning": "Agree — alignment or herd-camouflage; check matrix awareness",
+      "div": 25,
+      "user": "pull",
+      "userVs": {
+        "vsL": "align-L",
+        "vsR": "align-R"
+      }
+    }
+  ],
+  "histogram": {
+    "META-BREAK": 3,
+    "PARALLAX": 1,
+    "FUSION": 1
+  },
+  "synthesis": "No moral winner. META describes relation only. Preview: Stereo META bar after T1 commit.",
+  "gammaStatus": "Gamma connector auth failed — outline shipped to docs/gamma/G-stereokognicja.md for paste",
+  "nonCollapse": true
+}
