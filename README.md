@@ -53,6 +53,10 @@ Post–Turn 10: **decreasing certainty** by design.
 
 See [SUGGESTIONS.md](./SUGGESTIONS.md) and [docs/](./docs/).
 
+## Skill family (Grok Build Beta)
+
+Operational playbooks for every app used to build this lab: [skills/](./skills/).
+
 ## Gamma packs
 
 Ready-to-paste all-core pack: [docs/gamma/](./docs/gamma/) (vision · teacher · 10-turn map · social trio).
