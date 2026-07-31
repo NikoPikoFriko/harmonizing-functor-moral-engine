@@ -53,6 +53,10 @@ Post–Turn 10: **decreasing certainty** by design.
 
 See [SUGGESTIONS.md](./SUGGESTIONS.md) and [docs/](./docs/).
 
+## Gamma packs
+
+Ready-to-paste all-core pack: [docs/gamma/](./docs/gamma/) (vision · teacher · 10-turn map · social trio).
+
 ## Stereo-cognitive meta-game
 
 See [docs/META_GRA_STEREOKOGNICYJNA.md](./docs/META_GRA_STEREOKOGNICYJNA.md) (PL: [docs/META_GRA_STEREOKOGNICYJNA.pl.md](./docs/META_GRA_STEREOKOGNICYJNA.pl.md)).
