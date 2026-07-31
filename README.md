@@ -53,9 +53,10 @@ Post–Turn 10: **decreasing certainty** by design.
 
 See [SUGGESTIONS.md](./SUGGESTIONS.md) and [docs/](./docs/).
 
-## Skill family (Grok Build Beta)
+## Skill family
 
-Operational playbooks for every app used to build this lab: [skills/](./skills/).
+- **V2 (dla Ciebie — zakres i błędy systemowe, bez kodu):** [skills-v2/](./skills-v2/)
+- **V1 (dla agenta — operate/test w Grok Build):** [skills/](./skills/)
 
 ## Gamma packs
 

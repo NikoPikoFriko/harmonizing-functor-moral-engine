@@ -1,3 +1,7 @@
+# V1 — agent / Grok Build (implementacja)
+
+> **Właściciel wizji:** użyj **[skills-v2/](../skills-v2/)** — błędy zakresu i systemowe, bez kodu.
+
 # Skill family — Grok Build Beta · Trolley of Enlightenment
 
 **Created by:** skill-creator  
