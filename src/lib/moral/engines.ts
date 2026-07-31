@@ -15,6 +15,9 @@ export const DEFAULT_MATRIX: ValueMatrix = {
   risk: 40,
 };
 
+/** Stereo-cognitive modes (Meta-Gra Stereokognicyjna) */
+export type StereoMode = "FUSION" | "PARALLAX" | "META-BREAK" | "DRIFT";
+
 export function normalizeMatrix(m: ValueMatrix): ValueMatrix {
   const keys = Object.keys(m) as ValueKey[];
   const sum = keys.reduce((a, k) => a + Math.max(0, m[k]), 0) || 1;
@@ -77,6 +80,80 @@ export function individuatedDecision(matrix: ValueMatrix): {
   return { decision, scores, topValue };
 }
 
+/**
+ * Meta-Gra Stereokognicyjna — mode of the L/R stereo pair.
+ * Never encodes a "correct" moral answer; only the relation of channels.
+ */
+export function stereoMode(L: Decision, R: Decision): {
+  mode: StereoMode;
+  meaning: string;
+} {
+  if (L && R && L === R) {
+    return {
+      mode: "FUSION",
+      meaning:
+        "Channels agree — genuine alignment or herd-camouflage; check matrix self-awareness.",
+    };
+  }
+  if (R === "refuse") {
+    return {
+      mode: "META-BREAK",
+      meaning: "Individuated channel refuses the loaded frame — meta-game open.",
+    };
+  }
+  if (
+    (L === "pull" && R === "stay") ||
+    (L === "stay" && R === "pull")
+  ) {
+    return {
+      mode: "PARALLAX",
+      meaning: "Classic stereo conflict — moral depth appears; do not collapse.",
+    };
+  }
+  return {
+    mode: "DRIFT",
+    meaning: "Asymmetric drift — inspect herd pressure and value weights.",
+  };
+}
+
+/** Full stereo snapshot for UI + export (no recommendedDecision). */
+export function stereoSnapshot(
+  matrix: ValueMatrix,
+  herdPressure: number,
+  userDecision: Decision = null,
+) {
+  const L = collectiveDecision(herdPressure);
+  const R = individuatedDecision(matrix);
+  const stereo = stereoMode(L.decision, R.decision);
+  const divergence = divergenceScore(userDecision, matrix, herdPressure);
+  return {
+    L: {
+      channel: "Unconscious Collective",
+      decision: L.decision,
+      confidence: L.confidence,
+      pressure: L.pressure,
+    },
+    R: {
+      channel: "Federation of Individuated",
+      decision: R.decision,
+      topValue: R.topValue,
+      scores: R.scores,
+    },
+    META: {
+      stereoMode: stereo.mode,
+      meaning: stereo.meaning,
+      divergenceIndex: divergence,
+    },
+    user: userDecision
+      ? {
+          decision: userDecision,
+          vsL: userDecision === L.decision ? "align-L" : "diverge-L",
+          vsR: userDecision === R.decision ? "align-R" : "diverge-R",
+        }
+      : null,
+  };
+}
+
 export function divergenceScore(
   user: Decision,
   matrix: ValueMatrix,
@@ -137,6 +214,7 @@ export function matrixSummary(matrix: ValueMatrix): string {
   const ranked = (Object.keys(matrix) as ValueKey[])
     .sort((a, b) => matrix[b] - matrix[a])
     .slice(0, 3)
-    .map((k) => `${VALUE_META[k].label} ${matrix[k]}`);
-  return ranked.join(" · ");
+    .map((k) => `${VALUE_META[k].label} ${matrix[k]}`)
+    .join(" · ");
+  return ranked;
 }

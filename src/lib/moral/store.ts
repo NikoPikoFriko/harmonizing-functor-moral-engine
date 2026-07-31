@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { DEFAULT_MATRIX, divergenceScore } from "./engines";
+import { DEFAULT_MATRIX, divergenceScore, stereoSnapshot } from "./engines";
 import type {
   Decision,
   DilemmaVariant,
@@ -136,16 +136,28 @@ export const useLabStore = create<LabState & LabActions>()(
 
       exportProfile: () => {
         const s = get();
+        const stereo = stereoSnapshot(s.matrix, s.herdPressure, s.decision);
         return JSON.stringify(
           {
             app: "Trolley of Enlightenment → Alignment",
-            version: "0.3",
+            version: "0.3.1",
+            skill: "Meta-Gra Stereokognicyjna v1.0",
             matrix: s.matrix,
             history: s.history,
             herdPressure: s.herdPressure,
             autonomyStrength: s.autonomyStrength,
             federationRules: s.federationRules,
             philosophers: s.activePhilosophers,
+            stereo: {
+              mode: stereo.META.stereoMode,
+              meaning: stereo.META.meaning,
+              divergenceIndex: stereo.META.divergenceIndex,
+              L: stereo.L,
+              R: stereo.R,
+              user: stereo.user,
+            },
+            // Explicit non-collapse: never emit recommendedDecision
+            note: "Stereo fields describe channel relation only. No moral verdict.",
             exportedAt: new Date().toISOString(),
           },
           null,
