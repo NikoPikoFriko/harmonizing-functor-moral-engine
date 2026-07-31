@@ -53,6 +53,10 @@ Post–Turn 10: **decreasing certainty** by design.
 
 See [SUGGESTIONS.md](./SUGGESTIONS.md) and [docs/](./docs/).
 
+## Evolution cycles
+
+See [docs/EVOLUTION_CYCLE.md](./docs/EVOLUTION_CYCLE.md) (Linear skill + milestones).
+
 ## License
 
 MIT — see [LICENSE](./LICENSE)
