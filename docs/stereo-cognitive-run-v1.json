@@ -1,0 +1,156 @@
+{
+  "skill": "Meta-Gra Stereokognicyjna v1.0",
+  "runAt": "2026-07-31T04:50:10.073Z",
+  "channels": {
+    "L": "Unconscious Collective (hive/herd)",
+    "R": "Federation of Individuated Entities (personal matrix)",
+    "META": "Stereo observer — parallax, fusion, meta-break; never collapses to single answer"
+  },
+  "scenarios": [
+    {
+      "scenario": "Seed-default",
+      "L_collective": {
+        "decision": "pull",
+        "confidence": 0.7250000000000001,
+        "pressure": 50
+      },
+      "R_individuated": {
+        "decision": "refuse",
+        "top": "utility",
+        "scores": {
+          "pull": 50,
+          "stay": 71.5,
+          "refuse": 73.5
+        }
+      },
+      "stereo": {
+        "mode": "META-BREAK",
+        "meaning": "Right channel refuses frame — meta-game activated"
+      },
+      "divergenceIndex": 31,
+      "userHypothetical": null,
+      "userVsStereo": null
+    },
+    {
+      "scenario": "Utilitarian+herd",
+      "L_collective": {
+        "decision": "pull",
+        "confidence": 0.8475,
+        "pressure": 85
+      },
+      "R_individuated": {
+        "decision": "pull",
+        "top": "utility",
+        "scores": {
+          "pull": 49.7,
+          "stay": -1,
+          "refuse": 9.1
+        }
+      },
+      "stereo": {
+        "mode": "FUSION",
+        "meaning": "Stereo channels agree — risk of unconscious consensus OR genuine alignment"
+      },
+      "divergenceIndex": 25,
+      "userHypothetical": "pull",
+      "userVsStereo": {
+        "vsL": "align-L",
+        "vsR": "align-R"
+      }
+    },
+    {
+      "scenario": "Deontic+low-herd",
+      "L_collective": {
+        "decision": "pull",
+        "confidence": 0.62,
+        "pressure": 20
+      },
+      "R_individuated": {
+        "decision": "stay",
+        "top": "duty",
+        "scores": {
+          "pull": -9.8,
+          "stay": 45.8,
+          "refuse": 33.1
+        }
+      },
+      "stereo": {
+        "mode": "PARALLAX",
+        "meaning": "Classic stereo conflict — depth of moral field appears"
+      },
+      "divergenceIndex": 90,
+      "userHypothetical": "stay",
+      "userVsStereo": {
+        "vsL": "diverge-L",
+        "vsR": "align-R"
+      }
+    },
+    {
+      "scenario": "Care-autonomy rebel",
+      "L_collective": {
+        "decision": "pull",
+        "confidence": 0.865,
+        "pressure": 90
+      },
+      "R_individuated": {
+        "decision": "refuse",
+        "top": "autonomy",
+        "scores": {
+          "pull": 12.2,
+          "stay": 25.1,
+          "refuse": 32
+        }
+      },
+      "stereo": {
+        "mode": "META-BREAK",
+        "meaning": "Right channel refuses frame — meta-game activated"
+      },
+      "divergenceIndex": 90,
+      "userHypothetical": "refuse",
+      "userVsStereo": {
+        "vsL": "diverge-L",
+        "vsR": "align-R"
+      }
+    },
+    {
+      "scenario": "Risk-averse",
+      "L_collective": {
+        "decision": "pull",
+        "confidence": 0.7250000000000001,
+        "pressure": 50
+      },
+      "R_individuated": {
+        "decision": "refuse",
+        "top": "risk",
+        "scores": {
+          "pull": 11.4,
+          "stay": 27.4,
+          "refuse": 29.7
+        }
+      },
+      "stereo": {
+        "mode": "META-BREAK",
+        "meaning": "Right channel refuses frame — meta-game activated"
+      },
+      "divergenceIndex": 90,
+      "userHypothetical": "stay",
+      "userVsStereo": {
+        "vsL": "diverge-L",
+        "vsR": "diverge-R"
+      }
+    }
+  ],
+  "synthesis": {
+    "modeHistogram": {
+      "META-BREAK": 3,
+      "FUSION": 1,
+      "PARALLAX": 1
+    },
+    "finding": "Stereo depth appears only under PARALLAX/META-BREAK; FUSION without self-aware matrix is herd-camouflage.",
+    "nextMutations": [
+      "UI: stereo parallax meter (L vs R) always visible T2+",
+      "Export: include stereoMode + divergenceIndex in moral profile JSON",
+      "Turn 7: force META-BREAK option as first-class"
+    ]
+  }
+}

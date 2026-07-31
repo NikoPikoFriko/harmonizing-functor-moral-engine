@@ -53,6 +53,10 @@ Post–Turn 10: **decreasing certainty** by design.
 
 See [SUGGESTIONS.md](./SUGGESTIONS.md) and [docs/](./docs/).
 
+## Stereo-cognitive meta-game
+
+See [docs/META_GRA_STEREOKOGNICYJNA.md](./docs/META_GRA_STEREOKOGNICYJNA.md) (PL: [docs/META_GRA_STEREOKOGNICYJNA.pl.md](./docs/META_GRA_STEREOKOGNICYJNA.pl.md)).
+
 ## Evolution cycles
 
 See [docs/EVOLUTION_CYCLE.md](./docs/EVOLUTION_CYCLE.md) (Linear skill + milestones).
