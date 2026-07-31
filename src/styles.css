@@ -1,0 +1,95 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --color-bg: #0b1120;
+  --color-surface: #121a2b;
+  --color-elevated: #1a2438;
+  --color-fg: #e8eef7;
+  --color-muted: #8b9bb4;
+  --color-subtle: #5c6b84;
+  --color-border: #243049;
+  --color-border-strong: #354564;
+  --color-primary: #0d9488;
+  --color-primary-fg: #041412;
+  --color-accent: #22d3ee;
+  --color-accent-dim: #0e7490;
+  --color-hive: #f59e0b;
+  --color-self: #34d399;
+  --color-danger: #f87171;
+  --color-warn: #fbbf24;
+
+  --font-sans: "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 40%, transparent);
+  }
+}
+
+@layer utilities {
+  .void-grid {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, color-mix(in oklab, var(--color-primary) 18%, transparent), transparent),
+      linear-gradient(to bottom, transparent, var(--color-bg)),
+      radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--color-fg) 6%, transparent) 1px, transparent 0);
+    background-size: 100% 100%, 100% 100%, 28px 28px;
+  }
+
+  .panel {
+    background: color-mix(in oklab, var(--color-surface) 92%, transparent);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+  }
+
+  .glow-primary {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-primary) 40%, transparent),
+      0 0 24px color-mix(in oklab, var(--color-primary) 18%, transparent);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

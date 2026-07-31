@@ -1,0 +1,33 @@
+name: Dilemma proposal
+description: Propose a new abstract moral dilemma variant
+title: "[dilemma] "
+labels: ["type:enhancement", "engine:meta"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Variant name
+    validations:
+      required: true
+  - type: textarea
+    id: frame
+    attributes:
+      label: Frame (abstract)
+      description: Trolley-class only; no real-world targeting
+    validations:
+      required: true
+  - type: dropdown
+    id: axis
+    attributes:
+      label: Primary axis
+      options:
+        - Collective / herd
+        - Individuated / personal matrix
+        - Hybrid / federation
+        - Meta (frame interrogation)
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: Failure mode surfaced

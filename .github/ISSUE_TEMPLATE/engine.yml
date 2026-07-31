@@ -1,0 +1,22 @@
+name: Engine change
+description: Change a moral engine or scoring prior
+title: "[engine] "
+labels: ["type:enhancement"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Maturity version affected
+    validations:
+      required: true
+  - type: textarea
+    id: transparency
+    attributes:
+      label: Transparency impact
+    validations:
+      required: true
+  - type: dropdown
+    id: certainty
+    attributes:
+      label: Certainty
+      options: [high, medium-high, open]
