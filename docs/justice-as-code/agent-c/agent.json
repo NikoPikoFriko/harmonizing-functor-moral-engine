@@ -1,0 +1,183 @@
+{
+  "agent": "C",
+  "lens": "teoria sterowania, systemy dynamiczne, projektowanie mechanizmów, inżynieria niezawodności (SRE)",
+  "thesis": "System sprawiedliwości jest układem zamkniętym, który domyka pętlę wokół zmiennej mierzalnej (legitymacja L), a nie wokół zmiennej regulowanej (jakość orzekania q); ponieważ para (q, Θ) jest strukturalnie nieobserwowalna przy istniejącym zestawie czujników, układ jest bistabilny, jego drugi atraktor 'podtrzymuję własną legitymację' jest osiągalny bez złej woli jako równowaga best-response, a powrót z niego wymaga interwencji 96× silniejszej niż zapobieganie.",
+  "model_units": {
+    "time_step": "1 kwartał = 90 dni",
+    "caseload": "1 caseload-kwartał = 1e5 spraw [ASSUMPTION]",
+    "RU": "reputation unit — użyteczność aktora orzekającego",
+    "AU": "authority unit — jedno rozstrzygnięcie przy pełnym deficycie dowodowym"
+  },
+  "primitives": [
+    { "id": "PRIM-C-01", "name": "Case", "type": "jednostka przepływu", "note": "nośnik stanu faktycznego przez S0..S8" },
+    { "id": "PRIM-C-02", "name": "StateVector x", "type": "[q, L, E, G, O, V_p, Θ, S]", "note": "8 zmiennych stanu, krok 1 kwartał" },
+    { "id": "PRIM-C-03", "name": "Sensor", "type": "wiersz macierzy C", "note": "ma koszt utrzymania i właściciela politycznego; jest odwoływalny (ρ > 0)" },
+    { "id": "PRIM-C-04", "name": "Actuator", "type": "kanał sterujący", "note": "jedyny szybki to force_gas; pozostałe mają stałą czasową > 40 kw" },
+    { "id": "PRIM-C-05", "name": "Estimator", "type": "odwzorowanie y ↦ x̂", "note": "działa wyłącznie na podprzestrzeni obserwowalnej" },
+    { "id": "PRIM-C-06", "name": "Actor", "type": "agent z wypłatą w RU", "note": "horyzont kadencyjny 16–24 kw [EST]" },
+    { "id": "PRIM-C-07", "name": "ErrorStock E", "type": "integrator", "note": "zapas błędu zamaskowanego; caseload-kwartał; dren zamyka się przy O=0" },
+    { "id": "PRIM-C-08", "name": "ReferenceFrame Θ", "type": "dryfujący offset", "note": "punkt odniesienia oceny; bez wzorca zewnętrznego integrator bez sprzężenia" },
+    { "id": "PRIM-C-09", "name": "LegitimacyChannel L", "type": "wyjście mierzone", "note": "jedyne wyjście, wokół którego faktycznie domknięto pętlę" },
+    { "id": "PRIM-C-10", "name": "AuthorityReservoir G", "type": "rezerwuar skończony", "note": "Gmax = 100 AU; w stanie ustalonym 1.8% pojemności" },
+    { "id": "PRIM-C-11", "name": "Loop", "type": "(znak, wzmocnienie, opóźnienie)", "note": "pętla sprzężenia, adresowana jako LOOP-C-nn" },
+    { "id": "PRIM-C-12", "name": "Regime", "type": "(atraktor, pętla dominująca)", "note": "R1 A_praca / R2 przejście / R3 A_legit" }
+  ],
+  "invariants": [
+    { "id": "INV-C-01", "statement": "rank(Ob(A,C)) = n dla podprzestrzeni (q, Θ)", "enforced_at": ["S2", "S8"], "violation_detectable": false, "note": "naruszony w konfiguracji domyślnej: rank = 1 < 2" },
+    { "id": "INV-C-02", "statement": "E ≥ 0 oraz dE/dt ≤ ν(1−q); zapas błędu ograniczony", "enforced_at": ["S5"], "violation_detectable": false, "note": "wykrywalne tylko przy O > 0" },
+    { "id": "INV-C-03", "statement": "γ_eff = γ₀·O < g_crit(τ_a) = 2·sin(π/(2(2τ_a+1)))", "enforced_at": ["S6"], "violation_detectable": true },
+    { "id": "INV-C-04", "statement": "G ≥ G_min > 0 — niezerowa rezerwa autorytetu", "enforced_at": ["S4"], "violation_detectable": true, "note": "wykrywalne, ale niemierzone: brak licznika G" },
+    { "id": "INV-C-05", "statement": "c_m·φ·O > c_d — ujawnienie jest best response", "enforced_at": ["S2", "S5"], "violation_detectable": true },
+    { "id": "INV-C-06", "statement": "V = V_p ⊕ V_fact rozdzielne i raportowane osobno", "enforced_at": ["S1", "S2"], "violation_detectable": true },
+    { "id": "INV-C-07", "statement": "S ≤ S_max — brak pojedynczego punktu orzeczniczego", "enforced_at": ["S4"], "violation_detectable": true },
+    { "id": "INV-C-08", "statement": "kanał oceny jakości rozłączny z kanałem sterowania legitymacją", "enforced_at": ["S8"], "violation_detectable": true }
+  ],
+  "algorithms": [
+    { "id": "ALG-C-01", "name": "maskingRate", "complexity": "O(1)", "note": "best response aktora; próg O* = c_d/(c_m·φ) = 0.25" },
+    { "id": "ALG-C-02", "name": "evidenceConfidence", "complexity": "O(1)", "note": "wymaga Θ, którego system nie mierzy" },
+    { "id": "ALG-C-03", "name": "step", "complexity": "O(τ_a + τ_L)", "note": "krok symulacji, równania różnicowe" },
+    { "id": "ALG-C-04", "name": "observabilityMatrix + rank", "complexity": "O(n³)", "note": "kryterium Kalmana" },
+    { "id": "ALG-C-05", "name": "majestySwitch", "complexity": "O(1)", "note": "M = min(demand, G/gSpend) — twarde nasycenie" },
+    { "id": "ALG-C-06", "name": "detectors", "complexity": "O(T)", "note": "DET-C-01..07" },
+    { "id": "ALG-C-07", "name": "separatrix", "complexity": "O(iters·T)", "note": "bisekcja, 40 iteracji, zbieżność 1e-5" }
+  ],
+  "loops": [
+    { "id": "LOOP-C-01", "phenomenon": "reputation_coupling", "sign": "+", "gain": "g₁ = |∂m/∂O|·(ρO/η)·(ν(1−q)/γ₀O); 0.012 przy O=0.60, 20.0 przy O=0.25", "delay": "0 kw", "runaway_condition": "g₁ > 1 ⟺ O < 0.427" },
+    { "id": "LOOP-C-02", "phenomenon": "systemic_blindness", "sign": "+", "gain": "człon −ρ·O·E; przy E=54 siła tłumienia 13.5·O vs odbudowa ≤ 0.03 (>200×)", "delay": "0 kw", "runaway_condition": "ρ·E > η·(O_target/O − 1)" },
+    { "id": "LOOP-C-03", "phenomenon": "retroactive_relativization + onto_epistemic_drift", "sign": "+", "gain": "Θ* = ζ·E(1−O)/(c_cal·O), nasyca się na 1.0", "delay": "1 kw", "runaway_condition": "ζ·E(1−O) > c_cal·O; przy O=0.6: E > 1.25 caseload-kw" },
+    { "id": "LOOP-C-04", "phenomenon": "force_gas", "sign": "-", "gain": "gSpend/gRegen = 4.0", "delay": "0 kw", "runaway_condition": "nie rozbiega się — wyczerpuje się; przy G=0 staje się rozwarciem" },
+    { "id": "LOOP-C-05", "phenomenon": "majesty_switch", "sign": "+", "gain": "g₅ = (1/θ_conf)·O·(ξ_m/χ) = 0.65 przy O=0.60", "delay": "1–2 kw", "runaway_condition": "g₅ > 1 ⟺ O > 0.917 (niedostępne)" },
+    { "id": "LOOP-C-06", "phenomenon": "stage_corruption", "sign": "+", "gain": "ξ/χ = 0.50 przy O=0", "delay": "1 kw", "runaway_condition": "zawsze aktywna, sumuje się z g₁" },
+    { "id": "LOOP-C-07", "phenomenon": "korekta odwoławcza S6 (jedyna ujemna)", "sign": "-", "gain": "γ_eff = γ₀·O; 0.1799/kw w A_praca, 0.0000/kw w A_legit", "delay": "τ_a = 8 kw", "runaway_condition": "γ_eff > g_crit(8) = 0.1845/kw; punkt pracy = 97.5% marginesu" },
+    { "id": "LOOP-C-08", "phenomenon": "saint_dependency", "sign": "+", "gain": "S* = 0.549 (A_praca) / 0.716 (A_legit); awaria −43.5% q w jednym kroku", "delay": "hazard 0.025/kw", "runaway_condition": "brak progu — degradacja skokowa, nie łagodna" },
+    { "id": "LOOP-C-09", "phenomenon": "Goodhart / domknięcie wokół L", "sign": "+", "gain": "luka (L−q): −0.08 przy O*=0.60, +0.54 przy O*=0.05", "delay": "τ_L = 3 kw", "runaway_condition": "otwiera się przy O < 0.45 (poniżej progu kalibracji)" }
+  ],
+  "resources": [
+    { "id": "RES-C-01", "name": "force_gas", "unit": "AU (authority unit)", "finite": true, "payer": "strona przegrywająca na deficycie dowodowym; ekonomicznie przyszła legitymacja", "metering": "M = min(demand, G/gSpend); zużycie 100% w nominale, G* = 1.8% pojemności; brak licznika" },
+    { "id": "RES-C-02", "name": "reputacja aktora", "unit": "RU", "finite": true, "payer": "sam aktor", "metering": "U(ujawnij) = −c_d, U(zamaskuj) = −c_m·φ·O; przewaga maskowania +1.00 RU/sprawę w A_legit" },
+    { "id": "RES-C-03", "name": "obserwowalność strukturalna", "unit": "O ∈ [0,1]", "finite": true, "payer": "podmiot mierzony (ujemna prywatna NPV)", "metering": "SLI-C-03, SLI-C-05; break-even instalacji 16 kw vs kadencja 16–24 kw" },
+    { "id": "RES-C-04", "name": "error budget (zapas ukrytego błędu)", "unit": "caseload-kwartał", "finite": true, "payer": "strony spraw, odroczone o τ_a lub bezterminowo", "metering": "E_crit = 0.6975 = 69 750 spraw; próg osiągany w 8.7 kw pełnego maskowania" },
+    { "id": "RES-C-05", "name": "uwaga orzecznicza", "unit": "case-hour", "finite": true, "payer": "strony, przez czas postępowania", "metering": "hard deadline (prekluzja), nie backpressure; niedobór przelewa się na RES-C-01" },
+    { "id": "RES-C-06", "name": "pojemność 'świętego'", "unit": "udział obciążenia S ∈ [0,1]", "finite": true, "payer": "wszyscy, jednorazowo przy wypadnięciu", "metering": "SLI-C-06, SLO ≤ 0.15; faktyczne S* = 0.549–0.716 (366% SLO)" },
+    { "id": "RES-C-07", "name": "dług proceduralny", "unit": "case-hour korekty odroczonej", "finite": false, "payer": "instancja odwoławcza i strony, τ_a później", "metering": "brak; mnożnik kosztu naprawy ×1 na S1 do ×100 na S7; odsetki = 18% jakości" },
+    { "id": "RES-C-08", "name": "kredyt wsteczny (budżet relatywizacji)", "unit": "Θ ∈ [0,1]", "finite": true, "payer": "przyszłe sprawy oceniane wobec przesuniętego wzorca", "metering": "spłata tylko przez c_cal·O; wypłacalność przy O=0.6 wymaga E < 1.25" }
+  ],
+  "attractors": [
+    { "id": "A_praca", "regime": "R1 rozstrzyga sprawy", "q": 0.670, "L": 0.588, "O": 0.600, "E": 0.0, "Theta": 0.000, "V": 0.408, "G_AU": 1.76, "M": 0.147, "S": 0.548, "masking_rate": 0.000 },
+    { "id": "A_legit", "regime": "R3 podtrzymuje własną legitymację", "q": 0.269, "L": 0.376, "O": 0.000, "E": 53.96, "Theta": 1.000, "V": 0.675, "G_AU": 1.41, "M": 0.094, "S": 0.714, "masking_rate": 0.998 },
+    { "id": "separatrix", "E_crit": 0.6975, "unit": "caseload-kwartał", "absolute_EST": 69750, "time_to_cross_at_full_masking_quarters": 8.7 }
+  ],
+  "key_numeric_results": {
+    "masking_dominance_threshold_O": 0.25,
+    "loop_gain_crossover_O": 0.427,
+    "observability_rank_current": "1 z 2 (nieobserwowalne); jądro span{[1,-1]}",
+    "observability_rank_with_oob_sensor": "2 z 2 (obserwowalne)",
+    "delay_margin_utilization": 0.975,
+    "g_crit_tau8_per_quarter": 0.1845,
+    "gamma_eff_per_quarter": 0.1799,
+    "correction_chatter_period_quarters": "28–36 (7–9 lat), amplituda względna ~200%",
+    "controllability_gramian_condition": 330,
+    "min_energy_ratio_q_only_vs_coupled": 330,
+    "majesty_short_term_L_gain": 0.083,
+    "majesty_long_term_q_loss": -0.124,
+    "signalling_delay_quarters": 11,
+    "L_peak_during_collapse": 0.791,
+    "prevention_vs_repair_ratio": 96,
+    "oob_crit_prevention_per_quarter": 0.00209,
+    "oob_crit_repair_per_quarter": 0.20061,
+    "eta_crit_unconditional_stability_per_quarter": 0.1667,
+    "hysteresis_c_m_fall_RU": 5.5,
+    "hysteresis_c_m_recovery_RU": ">30 (nieosiągnięte)",
+    "procedural_variance_share_A_praca": 0.706,
+    "procedural_variance_share_A_legit": 0.822,
+    "saint_failure_q_drop": 0.291,
+    "sensor_install_breakeven_quarters": 16,
+    "decision_maker_tenure_quarters_EST": "16–24"
+  },
+  "leverage_points": [
+    { "id": "LEV-C-01", "name": "ρ → 0: nieodwoływalność zainstalowanego czujnika", "rank": 1, "works_as_repair": true, "note": "jedyna z 11 badanych dźwigni skuteczna po przekroczeniu progu" },
+    { "id": "LEV-C-02", "name": "η ≥ 0.1667/kw: stała czasowa odbudowy obserwowalności ≤ 6 kw", "rank": 2, "works_as_repair": false, "note": "likwiduje zły atraktor całkowicie, niezależnie od ρ" },
+    { "id": "LEV-C-03", "name": "czujnik out-of-band: druga niezależna linia macierzy C", "rank": 3, "works_as_repair": false, "note": "jedyna dźwignia przywracająca rangę; prewencyjnie 96× tańsza" },
+    { "id": "LEV-C-04", "name": "τ_a: 8 → 4 kw", "rank": 4, "works_as_repair": false, "note": "g_crit +88%, E* 1.88× mniejsze; w A_legit pętla rozwarta" },
+    { "id": "LEV-C-05", "name": "c_d → 0: blameless postmortem", "rank": 5, "works_as_repair": false, "note": "najtańsza wdrożeniowo; E_crit ×1.7; działa w kombinacji z ρ=0" },
+    { "id": "LEV-C-06", "name": "publikacja pary (M, demand − M)", "rank": 6, "works_as_repair": false, "note": "warunek wykrywalności FAIL-C-02" }
+  ],
+  "failure_modes": [
+    { "id": "FAIL-C-01", "name": "integrator windup na E", "observable_symptom": "żaden", "true_symptom": "E rośnie do 47–63 caseload-kw, Θ → 1" },
+    { "id": "FAIL-C-02", "name": "nasycenie aktuatora G", "observable_symptom": "spadek M — wygląda jak poprawa", "true_symptom": "75% popytu na rozstrzygnięcie niepokryte" },
+    { "id": "FAIL-C-03", "name": "utrata rangi macierzy obserwowalności", "observable_symptom": "wskaźniki stabilne", "true_symptom": "q i Θ przestają być rozróżnialne" },
+    { "id": "FAIL-C-04", "name": "chattering pętli korekty", "observable_symptom": "fale uchyleń o okresie 30–36 kw", "true_symptom": "korekta kampanijna zamiast ciągłej" },
+    { "id": "FAIL-C-05", "name": "awaria komponentu bez redundancji", "observable_symptom": "skokowy spadek q o 43.5%", "true_symptom": "brak powrotu w 40 kw" },
+    { "id": "FAIL-C-06", "name": "nasycenie dryfu Θ = 1", "observable_symptom": "wzrost L przy spadku q, luka +0.54", "true_symptom": "wzorzec przestał istnieć" },
+    { "id": "FAIL-C-07", "name": "zamek histerezy", "observable_symptom": "brak reakcji na zaostrzenie sankcji", "true_symptom": "c_m 5.5 → 30 RU nie przywraca reżimu R1" }
+  ],
+  "nonnegotiables": [
+    { "id": "NN-C-01", "claim": "Musi istnieć czujnik out-of-band mierzący q niezależnie od Θ.", "argument_type": "impossibility", "sketch": "Dla x = [q, Θ]ᵀ, A = I₂, C = [1,1] macierz obserwowalności Ob = [[1,1],[1,1]] ma rank 1 < 2. Jądro nieobserwowalne = span{[1,−1]}: 'jakość spadła o ε' i 'wzorzec podniósł się o ε' dają identyczną historię pomiarów dla każdego horyzontu i każdej realizacji szumu. Dodanie C₂ = [1,0] podnosi rank do 2. Zweryfikowane numerycznie (ALG-C-04)." },
+    { "id": "NN-C-02", "claim": "Zainstalowany czujnik musi być nieodwoływalny przez podmiot mierzony (ρ = 0).", "argument_type": "counterexample", "sketch": "Z 11 badanych dźwigni dokładnie jedna — ρ → 0 — przywraca reżim R1 po przekroczeniu separatrysy (q* 0.269 → 0.670); pozostałe dają q* ∈ [0.257, 0.300]. Mechanizm: przy E = 54 tłumienie ρ·O·E = 13.5·O vs odbudowa η(O_target−O) ≤ 0.03, stosunek > 200×. Histereza po c_m: upadek przy 5.5 RU, brak odbudowy do 30 RU." },
+    { "id": "NN-C-03", "claim": "c_d = 0: samo-ujawnienie błędu nie może kosztować ujawniającego.", "argument_type": "game-theoretic", "sketch": "Ujawnienie jest best response ⟺ O > O* = c_d/(c_m·φ). Warunek O* = 0 (best response przy dowolnej obserwowalności) osiągalny wyłącznie przez c_d = 0; zwiększanie c_m obniża O* hiperbolicznie, ale przy O → 0 iloczyn c_m·φ·O → 0 niezależnie od c_m. Dodatkowo próg niestabilności pętli (O = 0.427) leży 71% powyżej progu dominacji (O* = 0.25)." },
+    { "id": "NN-C-04", "claim": "Operacja S8 (rekalibracja wzorca wstecz) musi być zablokowana poniżej progu kalibracji.", "argument_type": "invariant", "sketch": "Θ̇ = ζ·E(1−O) − c_cal·O·Θ. Przy O = 0 człon tłumiący znika tożsamościowo i równanie redukuje się do Θ̇ = 0.06/kw — integratora bez sprzężenia zwrotnego (integrator windup). Nasycenie Θ = 1 w ~17 kw. Luka L − q: −0.08 przy O = 0.60, +0.54 przy O = 0.05. Standardowe zabezpieczenie: anti-windup, tj. wstrzymanie całkowania przy nasyceniu aktuatora." },
+    { "id": "NN-C-05", "claim": "M i niepokryty popyt (demand − M) muszą być raportowane razem.", "argument_type": "counterexample", "sketch": "M = 0.147 w A_praca (q = 0.670) i M = 0.094 w A_legit (q = 0.269) — gorszy reżim ma NIŻSZE M, bo M = min(demand, G/gSpend) jest ograniczone pustą rezerwą. Para (M, demand−M) odróżnia trzy stany, których M samo nie odróżnia: zdrowy (niskie, ≈0), nadużycie (wysokie, ≈0), nasycenie (niskie, wysokie). Bez drugiego licznika FAIL-C-02 jest niewykrywalny." },
+    { "id": "NN-C-06", "claim": "SLI-C-02 musi rozdzielać wariancję proceduralną od faktycznej.", "argument_type": "invariant", "sketch": "V = V_p + V_fact; hipotezy 'to trudność faktów' i 'to błędy proceduralne' przewidują identyczną wartość agregatu V, więc spór na V jest strukturalnie nierozstrzygalny. Konstrukcja rozstrzygająca: pary spraw o niezależnie zakodowanym izomorficznym stanie faktycznym. Predykcja: udział V_p = 70.6% (A_praca) / 82.2% (A_legit). Warunek falsyfikacji: pomiar < 35%." },
+    { "id": "NN-C-07", "claim": "Pętla oceny jakości nie może być domknięta przez L.", "argument_type": "complexity", "sketch": "Dla x = [q, L], u = M macierz wejścia B = [−0.0641, +0.0300]ᵀ ma przeciwne znaki z konstrukcji. Gramian sterowalności: λ_max = 1.73e-2, λ_min = 5.24e-5, κ(W) = 330. Energia minimalna przesunięcia o 0.10: 0.58 AU² wzdłuż λ_max (ze składową ujemną na q) vs 1.9e2 AU² dla q bez ruchu L. Kontroler minimalizujący uchyb na L musi obniżać q — to rozwiązanie zadania, nie błąd implementacji." },
+    { "id": "NN-C-08", "claim": "τ_a ≤ 4 kwartały dla klasy spraw krytycznych.", "argument_type": "impossibility", "sketch": "Dla E_{t+1} = E_t + b − g·E_{t−τ}: stabilność wymaga g < g_crit(τ) = 2·sin(π/(2(2τ+1))). Zapas ustalony E* = b/g, więc E*_min(τ) = b/g_crit(τ) jest ograniczony z dołu przez opóźnienie. Punkt pracy γ_eff = 0.1799 vs g_crit(8) = 0.1845 → 97.5% marginesu. Skrócenie τ_a 8→4 podnosi g_crit o 88% i redukuje E*_min 1.88×. Ograniczenie: działa wyłącznie prewencyjnie (w A_legit γ_eff = 0, pętla rozwarta)." }
+  ],
+  "nonnegotiable_minimal_set": ["NN-C-01", "NN-C-02", "NN-C-03"],
+  "concessions": [
+    { "id": "CON-C-01", "stage": "S2", "gives_up": "model czasu o wymiarze fizycznym na rzecz modelu zdarzeniowo-komunikatowego (rundy zamiast kwartałów)", "cost": 0.020, "unit": "caseload-kwartał", "accumulation": "liniowa a=0.020/kw", "reversible": "full", "revocation_predicate": "mediana czasu rundy poza [0.7, 1.4] kwartału przez 3 kolejne kwartały" },
+    { "id": "CON-C-02", "stage": "S5", "gives_up": "tezę, że commit nie kończy błędu; przyjęcie abstrakcji finality — E znika ze wspólnego interfejsu", "cost": 0.060, "unit": "caseload-kwartał", "accumulation": "wykładnicza h=24 kw", "reversible": "partial", "revocation_predicate": "SLI-C-03 (luka kalibracyjna) > 0.05 przez 2 kolejne kwartały" },
+    { "id": "CON-C-03", "stage": "S2", "gives_up": "indywidualną identyfikowalność best response; przyjęcie agregacji kworum/BFT", "cost": 0.045, "unit": "caseload-kwartał", "accumulation": "progowa T=12 kw, J=3.0", "reversible": "partial", "revocation_predicate": "korelacja rozbieżności głosów > 0.6 przez 2 kwartały LUB udział jednomyślnych > 0.85" },
+    { "id": "CON-C-04", "stage": "S1", "gives_up": "pierwszeństwo niezmienników trajektorii nad statyczną walidacją schematu", "cost": 0.025, "unit": "caseload-kwartał", "accumulation": "liniowa a=0.015/kw", "reversible": "full", "revocation_predicate": "runtime naruszenie INV-C-03 lub INV-C-01 przy zielonej walidacji statycznej (pojedyncze zdarzenie)" },
+    { "id": "CON-C-05", "stage": "S8", "gives_up": "ciągłą zmienną Θ na rzecz dyskretnego wersjonowania semantyki", "cost": 0.050, "unit": "caseload-kwartał", "accumulation": "wykładnicza h=32 kw", "reversible": "partial", "revocation_predicate": "wariancja wewnątrz wersji > 0.5 wariancji międzywersyjnej" },
+    { "id": "CON-C-06", "stage": "S6", "gives_up": "pierwszeństwo argumentu dynamicznego nad framingiem zobowiązań dowodowych", "cost": 0.015, "unit": "caseload-kwartał", "accumulation": "liniowa a=0.005/kw", "reversible": "full", "revocation_predicate": "obligacja przechodzi przy zmierzonym naruszeniu progu w danych runtime" },
+    { "id": "CON-C-07", "stage": "S4", "gives_up": "prawo do nierozstrzygnięcia; przyjęcie wymogu liveness — deficyt pokrywany autorytetem na kredyt", "cost": 0.075, "unit": "caseload-kwartał", "accumulation": "wykładnicza h=16 kw (najszybsza)", "reversible": "none", "revocation_predicate": "G < 0.05·Gmax przez 4 kolejne kwartały LUB udział rozstrzygnięć na kredyt > 0.25" },
+    { "id": "CON-C-08", "stage": "S0..S8", "gives_up": "raportowanie L jako wspólnej metryki zdrowia — WYŁĄCZNIE w formie związanej (raport, nigdy wejście pętli sterowania); forma nieograniczona odrzucona na podstawie NN-C-07", "cost": 0.025, "unit": "caseload-kwartał", "accumulation": "liniowa a=0.010/kw", "reversible": "full", "revocation_predicate": "|korelacja(L(t−k), decyzje proceduralne w t)| > 0.3 dla dowolnego k ≤ 8 kw" },
+    { "id": "CON-C-09", "stage": "S3", "gives_up": "jawny error budget na rzecz bounded retry / timeout", "cost": 0.030, "unit": "caseload-kwartał", "accumulation": "liniowa a=0.020/kw", "reversible": "full", "revocation_predicate": "(sprawy po deadline)/(zdolność przerobowa) > 1.15 przez 2 kwartały" }
+  ],
+  "drift_model": {
+    "formula": "D(t) = Σ_i c_i · κ_i(t − t_i) · 1[t ≥ t_i]; κ_lin(s) = 1 + a_i·s, κ_exp(s) = 2^(s/h_i), κ_prog(s) = 1 dla s < T_i, J_i dla s ≥ T_i",
+    "unit": "caseload-kwartał",
+    "threshold": 0.6975,
+    "threshold_justification": "E_crit — separatrysa policzona w torze I; D(t) ≥ E_crit oznacza, że sam dryf konsensusowy przy zerowym endogenicznym maskowaniu przenosi układ do A_legit",
+    "D_at_0": 0.345,
+    "threshold_crossing_quarters": 24,
+    "threshold_crossing_years": 6.0,
+    "threshold_crossing_if_CON_C_08_unbounded_quarters": 12,
+    "threshold_crossing_after_revoking_CON_C_07_quarters": 47,
+    "concessions_fitting_below_threshold_at_40q": 8,
+    "concession_that_crosses": "CON-C-07",
+    "dominant_contributors_at_40q": { "CON-C-07": 0.403, "CON-C-02": 0.181, "CON-C-03": 0.128 },
+    "doubling_period_quarters": "17 przy t=0, skracający się do 14 przy t=60",
+    "escalation_predicates": [
+      "D(t) ≥ 0.5·E_crit (t = 1 kw) → zamrożenie nowych ustępstw",
+      "D(t) ≥ 0.8·E_crit (t = 14 kw) → automatyczne wygaśnięcie wpisów o kumulacji wykładniczej (CON-C-02, CON-C-05, CON-C-07)",
+      "D(t) ≥ E_crit (t = 24 kw) → tor II wygasa w całości; obowiązuje wyłącznie tor I"
+    ]
+  },
+  "phenomena_coverage": {
+    "force_gas": "RES-C-01 + LOOP-C-04",
+    "majesty_switch": "ALG-C-05 + LOOP-C-05",
+    "reputation_coupling": "LOOP-C-01 + ALG-C-01 + RES-C-02",
+    "retroactive_relativization": "LOOP-C-03 + FAIL-C-01 + RES-C-08",
+    "onto_epistemic_drift": "LOOP-C-03 (zmienna Θ) + FAIL-C-06 + NN-C-04",
+    "stage_corruption": "LOOP-C-06 (zmienna V_p) + INV-C-06 + NN-C-06",
+    "systemic_blindness": "LOOP-C-02 + INV-C-01 + NN-C-01 + NN-C-02",
+    "saint_dependency": "LOOP-C-08 (zmienna S) + RES-C-06 + FAIL-C-05"
+  },
+  "stage_mapping": {
+    "S0": "zdarzenie poza obserwowalnością planta; brak wiersza w C",
+    "S1": "walidacja i routing; pierwsze źródło V_p",
+    "S2": "akwizycja pomiaru; tu instaluje się i demontuje czujniki (zmienna O)",
+    "S3": "hard deadline aktuatora (prekluzja), nie backpressure",
+    "S4": "wykonanie sterowania; punkt zapadnięcia majesty_switch",
+    "S5": "commit; jedyne przejście inkrementujące E",
+    "S6": "jedyna pętla ujemna, opóźnienie τ_a = 8 kw",
+    "S7": "efekty nieodwracalne; E nie jest w pełni drenowalne",
+    "S8": "jedyna operacja zapisu do Θ (punkt odniesienia pomiaru)"
+  },
+  "open_conflicts_expected": [
+    "Z soczewką konsensusową o wymóg liveness w S4 (CON-C-07, 40.3% całego dryfu). Ich model wymaga, żeby protokół zawsze robił postęp; mój model mówi, że wymuszony postęp przy pustym rezerwuarze G nie tworzy rozstrzygnięć, tylko rozstrzygnięcia bez pokrycia — 75% popytu niepokryte przy nominalnie stabilnym M. Nie ustąpię ponad formę już zaksięgowaną, bo usunięcie ogranicznika min(demand, G/gSpend) usuwa z modelu nasycenie aktuatora, czyli obiekt, wokół którego zbudowana jest cała analiza majesty_switch.",
+    "Z soczewką konsensusową o finality w S5 (CON-C-02). Dla nich commit kończy sprawę i jest przesłanką dowodów safety; u mnie S5 jest jedynym przejściem inkrementującym integrator E, a zapas trwa po commicie i osiąga 47–63 caseload-kw w złym atraktorze. Ukrycie integratora we wspólnym interfejsie nie zatrzymuje całkowania, tylko odczyt. Ustąpiłem raportowo, ale nie zgodzę się na usunięcie E z modelu wewnętrznego.",
+    "Z soczewką typów/weryfikacji o to, czy niezmiennik dowiedziony statycznie jest niezmiennikiem systemu (CON-C-04, CON-C-06). Dowód wiąże kod; plantem są ludzie z funkcją wypłaty RES-C-02, a przesłanką każdego takiego dowodu jest zmierzone O — czyli dokładnie ta zmienna, której system nie mierzy (rank Ob = 1 < 2). Nie ustąpię co do tego, że INV-C-01 i INV-C-03 są niewyrażalne statycznie: są własnościami trajektorii i macierzy obserwowalności, nie struktury danych.",
+    "Z obiema soczewkami o domknięcie pętli sterowania przez L. Odrzucam formę nieograniczoną CON-C-08 na podstawie NN-C-07: κ(W) = 330 oznacza, że kontroler realizujący cel na L będzie sterował 330× tańszym kierunkiem, który zawiera składową ujemną na q. To nie jest ryzyko nadużycia, tylko rozwiązanie postawionego zadania. Ustępstwo istnieje wyłącznie w formie raportowej, z predykatem natychmiastowego wygaszenia przy wykrytej korelacji > 0.3."
+  ]
+}
