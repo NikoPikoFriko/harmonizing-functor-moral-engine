@@ -1,0 +1,181 @@
+{
+  "agent": "B",
+  "protocol_version": "1.0",
+  "lens": "języki programowania, systemy typów, kompilatory, weryfikacja formalna",
+  "thesis": "System prawny jest językiem programowania o celowo niepełnej specyfikacji (bogatej w undefined behavior), którego jedyną zgodną implementacją jest pojedynczy niereprodukowalny interpreter, a system typów zawiera uprzywilejowany unsafeCoerce bez etykiety blame — skąd wynika, że wynik nie jest wyprowadzalny z tekstu, a twierdzenia o poprawności całości są wakacyjne, bo specyfikacja jest zdefiniowana jako wyjście oracle'a.",
+
+  "id_schema_extensions": [
+    { "type": "THM", "meaning": "twierdzenie z warunkiem falsyfikacji; rozszerzenie poza tabelę §4 protokołu" },
+    { "type": "AD", "meaning": "decyzja architektoniczna" },
+    { "type": "M", "meaning": "metryka proxy" }
+  ],
+
+  "primitives": [
+    { "id": "PRIM-B-01", "name": "World", "type": "typ nieskonstruowalny", "note": "brak konstruktora; do systemu wchodzi tylko przez stratny rzut π" },
+    { "id": "PRIM-B-02", "name": "FactState", "type": "rekord obserwabli z proweniencją", "note": "π : World ⇀ FactState bez lewego odwrotu; brak klucza ≠ false" },
+    { "id": "PRIM-B-03", "name": "Evidence", "type": "ADT o 4 konstruktorach", "note": "tylko konstruktor measurement niesie Dec, czyli rozstrzygalność i refutację" },
+    { "id": "PRIM-B-04", "name": "Claim", "type": "rekord po erasure taga", "note": "obraz nieinjektywnego funktora E = admit; Dec nieodzyskiwalne" },
+    { "id": "PRIM-B-05", "name": "Norm", "type": "rekord: guard, modalność, efekt, wersja, ranga", "note": "symbol w płaskiej globalnej przestrzeni nazw; pole derogates w praktyce puste" },
+    { "id": "PRIM-B-06", "name": "Guard", "type": "drzewo predykatów", "note": "liście mają denotację trójwartościową" },
+    { "id": "PRIM-B-07", "name": "Denotation", "type": "suma: defined / implementation_defined / undefined", "note": "wariant undefined nie ma pola eval — funkcji nie ma i mieć nie może" },
+    { "id": "PRIM-B-08", "name": "Gamma", "type": "kontekst interpretacyjny indeksowany czasem", "note": "rośnie monotonicznie; brak GC i eviction" },
+    { "id": "PRIM-B-09", "name": "Derivation", "type": "drzewo dowodowe z dwoma konstruktorami dziur", "note": "assume ma pole reason; majesty jest konstruktorem pustym" },
+    { "id": "PRIM-B-10", "name": "Judgment", "type": "typ sumaryczny bez metryki międzykonstruktorowej", "note": "odległość grant↔deny niezdefiniowana i niedefiniowalna jako kongruencja" },
+    { "id": "PRIM-B-11", "name": "PrecedentCache", "type": "memo-tablica HoldingKey ⇀ Judgment", "note": "brak deps, brak wersjonowania klucza, brak inwalidacji" },
+    { "id": "PRIM-B-12", "name": "Judge", "type": "instancja kompilatora", "note": "niedeterministyczna, stanowa, jednoegzemplarzowa; brak differential testing" },
+    { "id": "PRIM-B-13", "name": "Advocate", "type": "pass optymalizujący z celem przeciwstawnym", "note": "dostarcza heurystyki przeszukiwania, bo pełne przeszukiwanie jest poza budżetem" },
+    { "id": "PRIM-B-14", "name": "VGas", "type": "licznik kroków wyprowadzenia", "note": "jednostka: krok wyprowadzenia ≈ 30 s uwagi orzekającej [EST]" },
+    { "id": "PRIM-B-15", "name": "MajestyToken", "type": "świadek unsafeCoerce", "note": "nie występuje w wyjściu; jedyny zasób bez miarkowania" },
+    { "id": "PRIM-B-16", "name": "Blame", "type": "etykieta ℓ na rzutowaniu", "note": "nieobecna przy majesty; twierdzenie o blame staje się niewypowiadalne" },
+    { "id": "PRIM-B-17", "name": "Saint", "type": "interfejs bez implementacji", "note": "omniscient ∧ impartial ∧ total ∧ consistent; HumanJudge deklaruje zgodność bez testu zgodności" }
+  ],
+
+  "invariants": [
+    { "id": "INV-B-01", "statement": "Każdy liść Derivation typu assume jest obecny w serializowanym uzasadnieniu wraz z reason.", "enforced_at": ["S5"], "violation_detectable": false },
+    { "id": "INV-B-02", "statement": "Rozstrzygnięcie ma co najwyżej jedno wyprowadzenie zgodne z Γ albo jawnie odnotowaną kolizję.", "enforced_at": ["Sx-B-LINK"], "violation_detectable": false },
+    { "id": "INV-B-03", "statement": "Każdy citePrecedent ma decidedUnder przecinające się z wersją w mocy w czasie zdarzenia.", "enforced_at": ["S4"], "violation_detectable": true },
+    { "id": "INV-B-04", "statement": "Zbiór atomów faktycznych po S3 jest zamknięty i haszowany.", "enforced_at": ["S3"], "violation_detectable": true },
+    { "id": "INV-B-05", "statement": "Nie istnieje Judgment, którego basis zawiera majesty, bez etykiety blame.", "enforced_at": ["S5"], "violation_detectable": false },
+    { "id": "INV-B-06", "statement": "Wersja normy oceniającej zdarzenie = wersja w mocy w facts.at, nie w Gamma.at.", "enforced_at": ["S4"], "violation_detectable": true },
+    { "id": "INV-B-07", "statement": "Dec o niepewności poniżej τ nie jest przeważane przez większość Claimów.", "enforced_at": ["S2"], "violation_detectable": true },
+    { "id": "INV-B-08", "statement": "Naruszenie I₂ zatrzymuje potok i zawraca do S1/S2; nie przechodzi do S4.", "enforced_at": ["S3"], "violation_detectable": true }
+  ],
+
+  "algorithms": [
+    { "id": "ALG-B-01", "name": "subsume", "signature": "(Gamma, FactState, VGas) -> Result<{Judgment, VGas, assumes}, SubsumptionError>", "complexity": "O(b^d) w głębokości łańcucha, b≈3–8, d≈3–5; link O(k²·SAT)", "note": "partial, sound" },
+    { "id": "ALG-B-02", "name": "decide = totalize(subsume)", "signature": "(Gamma, FactState, VGas) -> Judgment", "complexity": "jw. + O(1) na rzutowanie", "note": "total, unsound; każdy SubsumptionError mapowany przez unsafeCoerce, informacja o rodzaju błędu ginie" }
+  ],
+
+  "theorems": [
+    { "id": "THM-B-01", "claim": "Jedna osiągalna pozycja undefined wystarcza, by każdy wynik w obrazie funkcji efektu był dopuszczalny; informacyjność tekstu spada do 0 bitów. UB działa też wstecz (time-travel UB).", "argument_type": "impossibility" },
+    { "id": "THM-B-02", "claim": "Spec := Oracle, więc twierdzenia o poprawności są tautologiami o treści 0 bitów; ε oracle'a nie jest mierzalne wewnątrz systemu.", "argument_type": "impossibility" },
+    { "id": "THM-B-03", "claim": "Nakaz totalności (zakaz non liquet) plus niezupełność kodeksu czynią soundness i totality łącznie niespełnialnymi; majesty_switch jest wymuszoną funkcją totalizującą, nie nadużyciem.", "argument_type": "impossibility" },
+    { "id": "THM-B-04", "claim": "majesty jest rzutowaniem bez etykiety blame, a obs skleja je z applyNorm; twierdzenie o blame jest niewypowiadalne, użycie majestatu nieobserwowalne, pozycja orzekającego niepodważalna z konstrukcji.", "argument_type": "counterexample" },
+    { "id": "THM-B-05", "claim": "lex posterior i lex specialis generują relację nieantysymetryczną, więc linkowanie jest funkcją wyboru; wykrycie kolizji jest coNP-trudne i Θ(n²·SAT), a guardy nie istnieją maszynowo — stąd systemic_blindness jest konstytutywna.", "argument_type": "complexity" },
+    { "id": "THM-B-06", "claim": "W modelu TLA+ Totality ∧ Soundness ∧ Pure ∧ NoSmuggle nie ma modelu przy GasInit ≤ GasMin + |frontier|; kontrprzykład długości 2.", "argument_type": "counterexample" },
+    { "id": "THM-B-07", "claim": "Po naruszeniu I₂ najsilniejszy wyprowadzalny warunek końcowy potoku to true — wynik jest niezwiązany z wejściem; apelacja nie pomaga, bo jest rerunem późnych faz na tym samym AST.", "argument_type": "invariant" },
+    { "id": "THM-B-08", "claim": "Postcondition S2 kwantyfikuje po material(F), definiowanym dopiero w S5, więc I₂ jest niesprawdzalny w chwili, w której ma zachodzić; ex post da się orzec obie odpowiedzi.", "argument_type": "counterexample" },
+    { "id": "THM-B-09", "claim": "Precedens to memoizacja bez inwalidacji: utrata referential transparency (kontrprzykład), Θ(cache) zamiast Θ(affected) przy nowelizacji, i przeniesienie denotacji z tekstu do cache bez kontraktu.", "argument_type": "counterexample" },
+    { "id": "THM-B-10", "claim": "res judicata nie jest widening (brak nadaproksymacji względem niezależnej konkretyzacji), tylko truncation: daje terminowanie bez żadnej gwarancji na relację wyniku do stanu konkretnego.", "argument_type": "invariant" },
+    { "id": "THM-B-11", "claim": "Brak dobrze ufundowanej miary terminującej; terminowanie jest wymuszane wyczerpaniem zasobu, więc zakończenie sprawy jest własnością budżetów stron, nie meritum.", "argument_type": "impossibility" },
+    { "id": "THM-B-12", "claim": "E = admit nie jest injektywny, więc Dec jest nieodzyskiwalne; refutacja staje się symetryczna z asercją i system nie może zostać zaskoczony przez świat.", "argument_type": "impossibility" },
+    { "id": "THM-B-13", "claim": "Poprawność definiowana jako brak uchylenia domyka się w punkcie stałym hierarchii, więc poprawność ≡ reputacja; nieobserwowalność fit jest przyczyną rozbiegania, nie skutkiem.", "argument_type": "invariant" },
+    { "id": "THM-B-14", "claim": "Budżet weryfikacji (~10³ vgas) jest o 10⁰–10² mniejszy od przestrzeni przeszukiwania (10³–10⁵), więc assume jest strukturalnie konieczny, a heurystykę dostarcza adwersarz.", "argument_type": "complexity" },
+    { "id": "THM-B-15", "claim": "Precedens jest zmianą łamiącą bez podbicia wersji: T niezmienione przy zmienionej denotacji, więc żaden diff tekstu jej nie wykryje.", "argument_type": "impossibility" }
+  ],
+
+  "loops": [
+    { "id": "LOOP-B-01", "phenomenon": "retroactive_relativization", "sign": "+", "gain": "1.2–2.0 [EST]", "delay": "10¹–10² dni", "runaway_condition": "koszt(przeszukiwanie od zera) > koszt(cytowanie)·(1+ryzyko uchylenia) — spełniony przy deficycie gazu z THM-B-14", "attractor": "kodeks jako dekoracja: wynik wyznaczony przez cache, tekst renderuje uzasadnienie post hoc" },
+    { "id": "LOOP-B-02", "phenomenon": "reputation_coupling", "sign": "+", "gain": "1.1–1.6 [EST]", "delay": "10²–10³ dni", "runaway_condition": "λ·∂P(uchylenie)/∂(zgodność z linią) > ∂fit/∂j; ułatwiony przez nieobserwowalność fit (THM-B-04)", "attractor": "samopotwierdzająca się hierarchia" },
+    { "id": "LOOP-B-03", "phenomenon": "systemic_blindness", "sign": "+", "gain": "1.05–1.3 na cykl legislacyjny [EST]", "delay": "10²–10³ dni", "runaway_condition": "koszt redakcyjny klauzuli ostrej > koszt sporów o wykładnię, dyskontowany horyzontem kadencji", "attractor": "korpus o zerowej informacyjności predykcyjnej" },
+    { "id": "LOOP-B-04", "phenomenon": "systemic_blindness", "sign": "+", "gain": "1.02–1.1/rok [EST]", "delay": "10³ dni", "runaway_condition": "koszt link-checku Θ(n²) przekracza dostępny budżet — przekroczony trwale", "attractor": "korpus bez indeksu i bez kompilatora; martwy kod z ryzykiem rewitalizacji (use-after-free)" },
+    { "id": "LOOP-B-05", "phenomenon": "force_gas", "sign": "+", "gain": "1.1–1.4 [EST]", "delay": "10¹–10² dni", "runaway_condition": "gaz/sprawę poniżej przestrzeni przeszukiwania (THM-B-14) przy braku pomiaru ρ_a", "attractor": "orzeczenie jako sygnatura bez ciała" },
+    { "id": "LOOP-B-06", "phenomenon": "onto_epistemic_drift", "sign": "+", "gain": "1.05–1.2 [EST]", "delay": "10³ dni (pokoleniowe w populacji biegłych)", "runaway_condition": "selekcja biegłych za przekonywalność zamiast trafność", "attractor": "świat jako kolejna strona sporu; Bool znika z systemu typów" },
+    { "id": "LOOP-B-07", "phenomenon": "stage_corruption", "sign": "-", "gain": "0.1–0.4 [EST] — za słabe", "delay": "10²–10³ dni", "runaway_condition": "n/d (pętla ujemna); nie stabilizuje, bo kontrola nie wraca do S2 i dzieli oracle z instancją niższą", "attractor": "pozorna kontrola" },
+    { "id": "LOOP-B-08", "phenomenon": "saint_dependency", "sign": "brak krawędzi", "gain": "n/d", "delay": "n/d", "runaway_condition": "krawędź wynik→porównanie z niezależną Spec nie istnieje, bo Spec := Oracle; formalnie self-loop o wzmocnieniu 1", "attractor": "najważniejszy wpis: brak jedynej pętli, która mogłaby tłumić pozostałe" },
+    { "id": "LOOP-B-09", "phenomenon": "majesty_switch", "sign": "+", "gain": "1.1–1.5 [EST]", "delay": "10²–10³ dni", "runaway_condition": "kurs wymiany budżet→gaz ≈ 10⁻¹ vgas/PLN przy niezerowej liczbie pozycji UB", "attractor": "ekspresywność jako towar; zawód-pośrednik bez bodźca do redukcji UB" }
+  ],
+
+  "resources": [
+    { "id": "RES-B-01", "name": "vgas — budżet weryfikacji", "unit": "krok wyprowadzenia", "finite": true, "payer": "sąd (stała alokacja) + strony (kierunek przeszukiwania)", "metering": "pośrednio przez uwagę orzekającą; ~1.2·10³ vgas/sprawę [EST]" },
+    { "id": "RES-B-02", "name": "uwaga orzekająca", "unit": "s / sprawę", "finite": true, "payer": "budżet państwa", "metering": "referat i normy statystyczne; 3.6·10⁴ s dla sprawy poważnej [EST]" },
+    { "id": "RES-B-03", "name": "rozmiar korpusu n", "unit": "jednostka redakcyjna", "finite": false, "payer": "wszyscy czytający", "metering": "brak — brak przebiegu DCE; 10⁴–10⁵ [EST]" },
+    { "id": "RES-B-04", "name": "budżet link-checku", "unit": "wywołanie SAT", "finite": true, "payer": "nikt", "metering": "brak; potrzeba Θ(n²) = 10⁸–10¹⁰ [EST], wydawane ~0" },
+    { "id": "RES-B-05", "name": "cache precedensów", "unit": "orzeczenie", "finite": false, "payer": "cytujący", "metering": "brak eviction, brak deps; 10⁵–10⁶ [EST]" },
+    { "id": "RES-B-06", "name": "budżet strony", "unit": "PLN", "finite": true, "payer": "strona", "metering": "rynek; kurs ~0.24 vgas/PLN [EST]" },
+    { "id": "RES-B-07", "name": "majesty_token", "unit": "użycie / orzeczenie", "finite": false, "payer": "strona przegrywająca", "metering": "BRAK — jedyny zasób bez licznika, limitu i śladu" },
+    { "id": "RES-B-08", "name": "gęstość assume ρ_a", "unit": "assume / krok wyprowadzenia", "finite": false, "payer": "—", "metering": "brak pomiaru; proxy: rodzina fraz 'w ocenie Sądu', 10⁰–10¹ na uzasadnienie [EST]" },
+    { "id": "RES-B-09", "name": "budżet winy (blame)", "unit": "jednostka przypisania (1 na orzeczenie)", "finite": true, "payer": "—", "metering": "brak; α+β < 1, reszta wycieka bo majesty nie ma adresata" },
+    { "id": "RES-B-10", "name": "czas do prawomocności", "unit": "dzień", "finite": false, "payer": "strona (koszt alternatywny)", "metering": "terminy instrukcyjne bez sankcji; absorbująca bariera z THM-B-11" },
+    { "id": "RES-B-11", "name": "vbit — falsyfikowalność", "unit": "bit", "finite": true, "payer": "model", "metering": "c = log₂(|B_S'|/|B_S|); budżet H₀ = 26 vbit [EST]" },
+    { "id": "RES-B-12", "name": "okno deprecjacji (vacatio legis)", "unit": "dzień", "finite": true, "payer": "adresat normy", "metering": "ustawa; domyślnie 14 dni PL, przy koszcie re-weryfikacji korpusu 10⁰–10² h [EST]" }
+  ],
+
+  "incommensurable_pairs": [
+    { "a": "RES-B-11 vbit", "b": "RES-B-06 PLN", "reason": "falsyfikowalność nie ma ceny rynkowej; przeliczenie wymagałoby metryki na przestrzeni orzeczeń, której nie ma (NN-B-05)" },
+    { "a": "RES-B-07 majesty_token", "b": "cokolwiek", "reason": "zasób bez licznika nie ma kursu; wycena byłaby wprowadzeniem liczby tam, gdzie nie ma pomiaru" },
+    { "a": "RES-B-09 blame", "b": "RES-B-06 PLN", "reason": "odszkodowanie nie jest przeliczeniem winy na pieniądz; sklejenie to główny kanał usuwania blame z modelu przez zmianę typu" }
+  ],
+
+  "failure_modes": [
+    { "id": "FAIL-B-01", "name": "UB divergence", "detectability": "wysoka statystycznie, zerowa w sprawie" },
+    { "id": "FAIL-B-02", "name": "blame leak", "detectability": "zerowa" },
+    { "id": "FAIL-B-03", "name": "stale memo", "detectability": "wysoka — mierzalne dziś" },
+    { "id": "FAIL-B-04", "name": "silent link", "detectability": "zerowa" },
+    { "id": "FAIL-B-05", "name": "corrupt AST", "detectability": "zerowa" },
+    { "id": "FAIL-B-06", "name": "decidability erasure", "detectability": "średnia (proxy M-B-01)" },
+    { "id": "FAIL-B-07", "name": "objective substitution", "detectability": "niska" },
+    { "id": "FAIL-B-08", "name": "oracle vacuity", "detectability": "strukturalna, nie empiryczna" },
+    { "id": "FAIL-B-09", "name": "nontermination", "detectability": "wysoka (czas do prawomocności)" },
+    { "id": "FAIL-B-10", "name": "dead-symbol revival", "detectability": "zerowa a priori" }
+  ],
+
+  "nonnegotiables": [
+    { "id": "NN-B-01", "claim": "NON_LIQUET musi być reprezentowalną wartością wyniku.", "argument_type": "impossibility", "sketch": "Totality ∧ Soundness łącznie niespełnialne (THM-B-03, THM-B-06); jedną trzeba oddać. Oddanie Totality daje wartość policzalną, zaskarżalną i sygnalizującą lukę w dom(derive); oddanie Soundness daje majesty niosący 0 bitów. NON_LIQUET jest jedynym sygnałem mogącym domknąć LOOP-B-08.", "refutation_condition": "wykazać dom(derive) = Case albo zmierzyć, że koszt niepewności stron przewyższa wartość informacyjną sygnału" },
+    { "id": "NN-B-02", "claim": "Każdy assume musi przeżyć serializację uzasadnienia.", "argument_type": "invariant", "sketch": "Bez pola INV-B-01 jest naruszalny przez pojedynczego aktora w O(1) (jedna fraza zamiast wyprowadzenia) i niewykrywalny post factum z żadnego zapisu, jaki system produkuje (THM-B-04, obs nieinjektywna).", "refutation_condition": "pokazać estymator ρ̂_a o kontrolowanym biasie, walidowany na próbie audytowej" },
+    { "id": "NN-B-03", "claim": "Każde rzutowanie niesprawdzone musi mieć etykietę blame.", "argument_type": "invariant", "sketch": "Twierdzenie o blame jest jedynym powodem użyteczności gradual typing. Bez etykiety jest niewypowiadalne, nie tylko naruszone. Każdy mechanizm korekcyjny to funkcja korekta : Blame → Działanie; przy pustej dziedzinie NIE ISTNIEJE żaden wyrażalny mechanizm dla części δ budżetu winy (RES-B-09).", "refutation_condition": "wskazać stosowany mechanizm przypisania odpowiedzialności za TREŚĆ niewyprowadzalnego kroku, z częstością istotnie różną od zera" },
+    { "id": "NN-B-04", "claim": "Pinowanie wersji normy do czasu zdarzenia oraz pole deps w PrecedentEntry.", "argument_type": "complexity", "sketch": "Bez deps inwalidacja to Θ(cache) ≈ 10⁵–10⁶ na nowelizację × 10³ nowelizacji/rok = 10⁸–10⁹ porównań ręcznie; z deps Θ(affected) ≈ 10¹–10³ maszynowo. Zmiana klasy złożoności utrzymania, nie stałej. Kontrprzykład FAIL-B-03 weryfikowalny dziś.", "refutation_condition": "zmierzyć stale_citation_rate < 10⁻² na reprezentatywnej próbie" },
+    { "id": "NN-B-05", "claim": "Dec nie może być wymazane przez admit; pomiar o niepewności poniżej τ podważalny wyłącznie powtórnym pomiarem.", "argument_type": "impossibility", "sketch": "E = admit nieinjektywny ⇒ brak lewego odwrotu ⇒ Dec nieodzyskiwalne. Refutacja staje się symetryczna z asercją (THM-B-12). Dec jest jedynym kanałem, którym informacja niezależna od oracle'a może wejść do systemu; jego usunięcie domyka system na wszystkie źródła falsyfikacji naraz.", "refutation_condition": "pokazać, że powtórzenie pomiaru jest niewykonalne w większości sporów o fakt techniczny (zawęża zakres, nie uchyla wpisu)" },
+    { "id": "NN-B-06", "claim": "Fail-fast na granicy fazy; prekluzja nie może utrwalać naruszonego I₂; material(F) zamrożone przed prekluzją.", "argument_type": "invariant", "sketch": "Przy ¬I₂ reguła COMP nie stosuje się i sp(¬I₂, S3;S4;S5) = true — wynik niezwiązany z wejściem (THM-B-07). Kontynuacja kosztuje pełny budżet potoku przy zerowym przyroście informacji o I₅; powrót do S2 kosztuje ściśle mniej. Wzmocnienie: I₂ kwantyfikuje po zbiorze definiowanym w S5 (THM-B-08), więc wykrywalność naruszenia = 0.", "refutation_condition": "pokazać częstość zmiany kwalifikacji prawnej po prekluzji poniżej 10⁻² bez istotnej zmiany material" },
+    { "id": "NN-B-07", "claim": "Saint nie może być założony; twierdzenia o poprawności relatywizowane jawnie, plus niezależna Spec choćby na wycinku.", "argument_type": "impossibility", "sketch": "Spec := Oracle ⇒ ∀c. Oracle(c) = Spec(c) jest tautologią o treści 0 bitów (THM-B-02). Błąd oracle'a definicyjnie nie jest błędem, więc ε jest nieokreślone, nie tylko duże. Treść przywraca tylko Spec niezależna: Dec (świat) oraz per-podmiotowa rodzina Spec_p zgodnie z aksjomatem wejściowym protokołu.", "refutation_condition": "wskazać wiążący conformance suite używany do stwierdzania błędu orzeczenia niezależnie od tego, jak orzekłby sąd" },
+    { "id": "NN-B-08", "claim": "Inwentarz pozycji UB w korpusie (nie: usunięcie UB).", "argument_type": "counterexample", "sketch": "Jedna osiągalna pozycja UB wystarcza (THM-B-01), więc znaczenie ma predykat OSIĄGALNOŚCI, nie średnia nieostrość. Enumeracja kosztuje O(n) jednorazowo (n ≈ 10⁴–10⁵); brak enumeracji kosztuje stale na każdą sprawę (THM-B-14) plus LOOP-B-09. Wzór: Annex J.2 standardu C — UB nie usunięto, wyliczono, i to wystarczyło, by powstały narzędzia.", "refutation_condition": "pokazać, że granica implementation_defined / undefined sama wymaga rozstrzygnięcia sądowego dla większości klauzul; odpowiedź częściowa: klasyfikacja konserwatywna jest sound" }
+  ],
+
+  "concessions": [
+    { "id": "CON-B-01", "stage": "S5", "gives_up": "dowód przed commitem; NON_LIQUET jako wartość blokująca (nie: reprezentowana)", "toward": "K1 liveness", "cost": 3.2, "unit": "vbit", "accumulation": "E, g=0.15/rok, T2x=4.6 lat", "reversible": "partial", "revocation_predicate": "coerced_rate > 0.05 ∧ reversal_rate(coerced) > 2·reversal_rate(proved)" },
+    { "id": "CON-B-02", "stage": "S2", "gives_up": "wyłączność Dec jako źródła rozstrzygalności (zachowuję veto dla uncertainty < τ)", "toward": "K1 fakt jako zgoda kworum", "cost": 2.0, "unit": "vbit", "accumulation": "L, ρ=0.10/rok", "reversible": "full", "revocation_predicate": "overrule_rate(Dec) > 0.01 ∨ M-B-01 < 0.05" },
+    { "id": "CON-B-03", "stage": "S8", "gives_up": "dokładną inwalidację cache; przyjmuję ograniczoną nieświeżość Δ = 1 cykl legislacyjny", "toward": "K1 eventual consistency", "cost": 1.6, "unit": "vbit", "accumulation": "L, ρ=0.10/rok", "reversible": "full", "revocation_predicate": "stale_citation_rate > 0.03" },
+    { "id": "CON-B-04", "stage": "S6", "gives_up": "res judicata jako dokładnie-raz; przyjmuję co-najmniej-raz z kluczem idempotencji", "toward": "K1 retry semantics", "cost": 0.8, "unit": "vbit", "accumulation": "P, skok do 4.0 przy retries > 3, t≈4 lata [EST]", "reversible": "partial", "revocation_predicate": "mean_retries_per_case > 1.5" },
+    { "id": "CON-B-05", "stage": "S5", "gives_up": "Judgment jako typ sumaryczny bez metryki; osadzenie ilościowe z barierą typową między konstruktorami", "toward": "K2 różniczkowalna funkcja straty", "cost": 4.5, "unit": "vbit", "accumulation": "E, g=0.25/rok, T2x=2.8 lat", "reversible": "none", "revocation_predicate": "BRAK — nieodwracalne; zamiast tego twardy limit zakresu do podprzestrzeni ilościowej" },
+    { "id": "CON-B-06", "stage": "S3", "gives_up": "niezmienniki jako predykaty twarde; przyjmuję partycję hard/soft z tolerancją (NN-* przypisane do hard)", "toward": "K2 setpoint z tolerancją", "cost": 2.4, "unit": "vbit", "accumulation": "L, ρ=0.20/rok", "reversible": "partial", "revocation_predicate": "ε_efektywne/ε_deklarowane > 2.0 ∨ jakikolwiek NN-* przeklasyfikowany na soft" },
+    { "id": "CON-B-07", "stage": "S1..S5", "gives_up": "bezpośrednią instrumentację ρ_a; przyjmuję estymację z proxy", "toward": "K2 estymacja stanu", "cost": 1.2, "unit": "vbit", "accumulation": "D, T½=3 lata warunkowo; stała, jeśli instrumentacja nie powstanie", "reversible": "full", "revocation_predicate": "instrumentacja bezpośrednia dostępna ∨ rozbieżność estymatora od audytu > 30%" },
+    { "id": "CON-B-08", "stage": "S4", "gives_up": "jednoinstancyjny model orzekającego n=1", "toward": "K1 tolerancja bizantyjska f < n/3", "cost": 0.6, "unit": "vbit", "accumulation": "stała", "reversible": "full", "revocation_predicate": "brak potrzeby — ustępstwo korzystne, księgowane dla rzetelności" },
+    { "id": "CON-B-09", "stage": "S7", "gives_up": "ścisłą segregację efektów w jawnym typie; dodaję pole saturation", "toward": "K2 egzekucja jako sterowanie", "cost": 1.0, "unit": "vbit", "accumulation": "L, ρ=0.05/rok", "reversible": "full", "revocation_predicate": "udział czynności poza zadeklarowanym typem efektu > 0.02" }
+  ],
+
+  "drift_model": {
+    "formula": "D(t) = Σ_i c_i(t) + Σ_{i<j} κ_ij · sqrt(c_i(t)·c_j(t))",
+    "unit": "vbit",
+    "coupling": [
+      { "pair": ["CON-B-01", "CON-B-06"], "kappa": 0.5, "reason": "commit bez dowodu + niezmienniki miękkie: nie zostaje żaden twardy predykat wyłapujący coerced" },
+      { "pair": ["CON-B-01", "CON-B-07"], "kappa": 0.4, "reason": "metryka wykrywcza dla CON-B-01 sama jest estymatorem o nieznanym biasie" },
+      { "pair": ["CON-B-02", "CON-B-05"], "kappa": 0.6, "reason": "fakt z kworum + metryka na wyniku: rozstrzygalność omijana z obu stron naraz" },
+      { "pair": ["CON-B-03", "CON-B-04"], "kappa": 0.3, "reason": "ponowienie trafia w ten sam nieświeży wpis; idempotencja utrwala nieświeżość" },
+      { "pair": ["CON-B-01", "CON-B-08"], "kappa": -0.3, "reason": "panel z przypisaniem blame ogranicza szkodę z niedowodzonego commitu" }
+    ],
+    "H0": 26,
+    "H0_note": "[EST] treść informacyjna modelu suwerennego; skaluje się logarytmicznie, błąd rzędu wielkości = ±3.3 vbit",
+    "D_0": 21.2,
+    "D_0_fraction_of_H0": 0.815,
+    "t_star_years": 1.6,
+    "N_star": 2,
+    "merge_quality": "FRAGILE",
+    "merge_quality_reason": "N* jest rzędu jedności (CONSENSUS-PHASE §3). W języku tej soczewki: trzy modele nie mają wspólnego podtypu o niepustym zbiorze mieszkańców; najsilniejszy wspólny interfejs jest typem unknown, a scalenie do unknown jest zawsze możliwe i zawsze bezwartościowe.",
+    "sensitivity": "Przy κ = 0 (ustępstwa niezależne): D(0) = 17.3 (66.5%), t* ≈ 2.6 roku, N* = 4. Wniosek FRAGILE przetrwałby. Kierunek biasu autora jest znany i niekorzystny: wyceniałem własne ustępstwa, więc tendencja do zawyżania kosztu; kontrola przez jawnie nisko wycenione CON-B-04 i CON-B-08."
+  },
+
+  "phenomena_coverage": {
+    "force_gas": "RES-B-01 + THM-B-14 + LOOP-B-05 + ALG-B-01",
+    "majesty_switch": "THM-B-03 (wymuszenie) + THM-B-04 (nieobserwowalność) + ALG-B-02 + RES-B-07",
+    "reputation_coupling": "THM-B-13 + LOOP-B-02 + FAIL-B-07",
+    "retroactive_relativization": "THM-B-01.2 (time-travel UB) + THM-B-15 (niewersjonowana zmiana łamiąca) + THM-B-08 + LOOP-B-01",
+    "onto_epistemic_drift": "THM-B-12 (erasure Dec, Prop vs Bool) + LOOP-B-06 + FAIL-B-06 + M-B-01",
+    "stage_corruption": "THM-B-07 (sp = true) + THM-B-08 + FAIL-B-05 + LOOP-B-07",
+    "systemic_blindness": "THM-B-05 (coNP + brak reprezentacji) + THM-B-02 + THM-B-04 + LOOP-B-04 + FAIL-B-04",
+    "saint_dependency": "THM-B-02 (wakacyjność Spec := Oracle) + PRIM-B-17 + LOOP-B-08 + NN-B-07"
+  },
+
+  "metrics": [
+    { "id": "M-B-01", "name": "udział sporów o fakt techniczny rozstrzygniętych powtórzeniem pomiaru", "measures": "onto_epistemic_drift", "estimate": "10⁻¹ lub niżej [EST]", "measurable_today": false },
+    { "id": "M-B-02", "name": "stale_citation_rate", "measures": "retroactive_relativization / FAIL-B-03", "estimate": "brak danych", "measurable_today": true },
+    { "id": "M-B-03", "name": "ρ_a — gęstość assume", "measures": "force_gas", "estimate": "10⁰–10¹ fraz na uzasadnienie [EST]", "measurable_today": "tylko jako proxy NLP (CON-B-07)" },
+    { "id": "M-B-04", "name": "stosunek cytowań orzeczeń do cytowań przepisów", "measures": "LOOP-B-01, atraktor 'kodeks jako dekoracja'", "estimate": "próg alarmowy > 1", "measurable_today": true },
+    { "id": "M-B-05", "name": "coerced_rate", "measures": "majesty_switch", "estimate": "niemierzalne bez NN-B-03", "measurable_today": false }
+  ],
+
+  "open_conflicts_expected": [
+    "S2 — KWORUM vs ROZSTRZYGALNOŚĆ. Soczewka konsensusowa zdefiniuje fakt jako zgodę kworum. Ustępuję do veta dla Dec o uncertainty < τ (CON-B-02) i dalej nie ustąpię, bo THM-B-12 pokazuje, że po erasure Dec refutacja staje się symetryczna z asercją i system traci JEDYNY kanał informacji niezależnej od oracle'a. Argument jest ich własny: BFT gwarantuje agreement, nie validity — przy skażonym wejściu wszystkie repliki uzgadniają śmieć. Konsensus bez rozstrzygalnego wejścia nie jest rozwiązaniem problemu prawdy, tylko jego przeniesieniem.",
+    "S5 — METRYKA NA PRZESTRZENI ORZECZEŃ. Soczewka sterownicza potrzebuje różniczkowalnej straty. Ustępuję do podprzestrzeni ilościowej z barierą typową (CON-B-05) i dalej nie ustąpię, bo metryka międzykonstruktorowa nie jest kongruencją względem relacji wyprowadzalności: dwa orzeczenia bliskie w metryce mogą różnić się tym, czy w ogóle są wyprowadzalne. To jest FALSE-COMMENSURATION w rozumieniu CONSENSUS-PHASE §4. Dodatkowo: CON-B-05 ma odwracalność 'none' i najwyższe g w księdze (0.25/rok), więc jest pojedynczo odpowiedzialne za przesunięcie t* z ~4 lat na 1.6 roku.",
+    "S5 — CZY majesty JEST SZUMEM, CZY DZIURĄ. Soczewka sterownicza zamodeluje odchylenie orzekającego jako szum o zerowej średniej i zaprojektuje kompensator; soczewka konsensusowa zamodeluje je jako usterkę bizantyjską ograniczoną przez f < n/3. OBIE zakładają, że zjawisko jest ograniczone i statystycznie charakteryzowalne. THM-B-01 + THM-B-04 mówią co innego: to jest nieetykietowane rzutowanie niesoundowe, więc jego zasięg to CAŁY typ wyniku (nieograniczony), a jego użycie jest NIEOBSERWOWALNE (nie: zaszumione). Ani filtr, ani kworum nie działają bez kanału obserwacji. Nie ustąpię z NN-B-03, bo etykieta blame JEST tym kanałem — to nie jest ustępstwo, którego oczekuję od nich, tylko warunek konieczny działania ICH WŁASNYCH narzędzi."
+  ]
+}
