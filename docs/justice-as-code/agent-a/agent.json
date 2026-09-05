@@ -1,0 +1,117 @@
+{
+  "agent": "A",
+  "lens": "systemy rozproszone / konsensus / synchronizacja stanu",
+  "thesis": "Postępowanie sądowe nie jest protokołem konsensusu, lecz replicated state machine bez replikacji (n=1, więc f_max=0): warunek quorum intersection jest strukturalnie niespełnialny na faktach rozstrzygających, więc wymuszona terminacja jest domykana wydatkiem force_gas — mierzalnego zasobu autorytetu podstawianego zamiast dowodu — a brak emisji tego wydatku nie jest zaniedbaniem, tylko strategią dominującą systemu.",
+
+  "primitives": [
+    { "id": "PRIM-A-01", "name": "NodeDescriptor", "type": "aktor", "note": "nosi reputationPool (źródło skorelowanej awarii) i mayWithhold (proceduralne prawo zatajenia stanu); model awarii rational-byzantine, nie crash-stop" },
+    { "id": "PRIM-A-02", "name": "FactState", "type": "stan", "note": "prywatny, nierepliowany fragment stanu świata; do protokołu wchodzą wyłącznie twierdzenia o nim — dlatego discovery nie synchronizuje stanu, tylko buduje log" },
+    { "id": "PRIM-A-03", "name": "Fact", "type": "dane", "note": "custodians ze znakiem interesu, flagi decisive i selfVerifying; nośnik THM-A-02" },
+    { "id": "PRIM-A-04", "name": "Entry / CaseLog", "type": "log", "note": "łańcuch haszy; append-only w intencji, ale dopuszcza zmianę meaning przy stałych bytes (retroactive_relativization)" },
+    { "id": "PRIM-A-05", "name": "Judge / Orchestrator", "type": "lider", "note": "lider bez wyborów i bez view-change dostępnego replikom; kadencja = czas trwania sprawy" },
+    { "id": "PRIM-A-06", "name": "ForceGas", "type": "zasób", "note": "1 FG = jedno rozstrzygnięcie kwestii spornej bez dowodu rozstrzygającego, niefalsyfikowalne z zewnątrz" },
+    { "id": "PRIM-A-07", "name": "Lease", "type": "czas", "note": "termin procesowy; jednostronny — wygasa po stronie strony, nie po stronie organu, więc nie jest lease" },
+    { "id": "PRIM-A-08", "name": "Precedent", "type": "migracja schematu", "note": "zmiana SchemaVersion z flagą declarativeBackdate" },
+    { "id": "PRIM-A-09", "name": "VersionVector", "type": "zegar semantyczny", "note": "wektor wersji znaczeń terminów normatywnych; w systemie faktycznym nie istnieje" },
+    { "id": "PRIM-A-10", "name": "Completeness", "type": "metadane finalizacji", "note": "zbiór porzucony przez prekluzję, fakty single-custody, flaga fikcji doręczenia, skalibrowana pewność; nie jest emitowana" },
+    { "id": "PRIM-A-11", "name": "GasMeter", "type": "licznik", "note": "wariant faktyczny (chargeUnchecked) nie ma pre-execution check ani konstruktora błędu" }
+  ],
+
+  "invariants": [
+    { "id": "INV-A-01", "statement": "Log jest append-only; korekta to nowy wpis wskazujący poprzednika, nigdy mutacja; hasze commitowane zewnętrznie.", "enforced_at": ["S1","S2","S3","S4","S5","S6","S7","S8"], "violation_detectable": true },
+    { "id": "INV-A-02", "statement": "Każdy fakt decisive ma custodyClass=dual albo wyrok niesie go w Completeness.singleCustodyDecisive.", "enforced_at": ["S2","S5"], "violation_detectable": true },
+    { "id": "INV-A-03", "statement": "Funkcja przejścia nie zależy od wall-clock; zależność od semantyki jest jawna przez SchemaVersion.", "enforced_at": ["S4","S5","S6","S7","S8"], "violation_detectable": true },
+    { "id": "INV-A-04", "statement": "Finalizacja niesie pełny Completeness, w tym calibrated.support w [0,1].", "enforced_at": ["S5"], "violation_detectable": true },
+    { "id": "INV-A-05", "statement": "Moment wpływu i każda zmiana kolejności są commitowane poza kontrolą organu.", "enforced_at": ["S1","S3","S4"], "violation_detectable": true },
+    { "id": "INV-A-06", "statement": "mode=authority wtedy i tylko wtedy, gdy forceGasSpent>0; sumy FG per organ są publiczne.", "enforced_at": ["S4","S5"], "violation_detectable": true },
+    { "id": "INV-A-07", "statement": "RollbackPolicy (d_max, floorStage) deklarowana przed commitem, nie po.", "enforced_at": ["S5"], "violation_detectable": true },
+    { "id": "INV-A-08", "statement": "Każdy termin normatywny niesie VersionVector; scalanie multi-value, nigdy last-write-wins.", "enforced_at": ["S4","S8"], "violation_detectable": true },
+    { "id": "INV-A-09", "statement": "Fikcja doręczenia implikuje Completeness.assumedDelivery=true i propaguje się do S7.", "enforced_at": ["S1","S5","S7"], "violation_detectable": true },
+    { "id": "INV-A-10", "statement": "Zbiór węzłów weryfikujących ma puste przecięcie z pulą reputacyjną węzła weryfikowanego.", "enforced_at": ["S6"], "violation_detectable": true }
+  ],
+
+  "loops": [
+    { "id": "LOOP-A-01", "phenomenon": "force_gas", "sign": "zmienny", "gain": "delta*a - rho_max*obs, zakres [-0.025, +0.025]/rok", "delay": "3-15 lat [EST]", "runaway_condition": "obs < obs_crit = delta*a/rho_max = 0.5, czyli D(t) > 50 du; równowaga przy obs=1 to e*=40 pp, nigdy zero" },
+    { "id": "LOOP-A-02", "phenomenon": "reputation_coupling", "sign": "+", "gain": "wzrost (alpha+beta) ok. 0.04/rok [EST]", "delay": "tygodnie-miesiące", "runaway_condition": "P(wykrycie)*sankcja < delta_U_self; przy braku INV-A-08 P(wykrycie)~0, więc spełniony trywialnie" },
+    { "id": "LOOP-A-03", "phenomenon": "stage_corruption", "sign": "+", "gain": "q*p_corrupt liniowo, brak członu wycofania", "delay": "2-8 lat [EST]", "runaway_condition": "zawsze — nie istnieje operacja wycofania tezy prawnej z powodu wadliwości podstawy faktycznej sprawy źródłowej" },
+    { "id": "LOOP-A-04", "phenomenon": "systemic_blindness", "sign": "+", "gain": "rosnące w czasie (koszt instrumentacji rośnie ze skumulowanym niezmierzonym błędem)", "delay": "brak", "runaway_condition": "zawsze — nieujawnianie skalibrowanej pewności jest strategią dominującą przy binarnej egzekucji w S7 (THM-A-05)" },
+    { "id": "LOOP-A-05", "phenomenon": "onto_epistemic_drift", "sign": "dyfuzja", "gain": "sigma=0.12/sqrt(rok) [EST]", "delay": "n/d", "runaway_condition": "theta=0 (brak kotwicy tekstowej) => Var=sigma^2*t nieograniczona; przekroczenie sd=0.5 po 17 latach" },
+    { "id": "LOOP-A-06", "phenomenon": "force_gas", "sign": "+", "gain": "beta (przyrost napływu wniosków przewlekających na jednostkę oczekiwania)", "delay": "miesiące", "runaway_condition": "beta > beta_crit = [(mu+lambda0)^2-4*lambda0*mu]/(4*lambda0) = 0.00662 dla mu=1, lambda0=0.85 [EST]" },
+    { "id": "LOOP-A-07", "phenomenon": "saint_dependency", "sign": "+", "gain": "1/(1-rho_q)^2", "delay": "1-3 lata [EST]", "runaway_condition": "rho_q > 0.9; wzrost obciążenia z 0.90 do 0.98 (o 8.9%) wydłuża oczekiwanie 5-krotnie" },
+    { "id": "LOOP-A-08", "phenomenon": "stage_corruption", "sign": "-", "gain": "~1 (substytucja prekluzja <-> force_gas)", "delay": "miesiące", "runaway_condition": "brak — jedyna pętla ujemna w modelu; stabilizuje przepustowość kosztem trafności, sterowana po jedynej obserwowalnej metryce (czas), czyli Goodhart" }
+  ],
+
+  "resources": [
+    { "id": "RES-A-01", "name": "force_gas", "unit": "FG (~0.5 judge-hour ~ 156 PLN ceny cienia [EST])", "finite": true, "payer": "przegrywający natychmiast, populacja z opóźnieniem 3-15 lat", "metering": "BRAK pre-execution check (chargeUnchecked nie ma konstruktora błędu); przy wyczerpaniu nie out-of-gas, tylko fork" },
+    { "id": "RES-A-02", "name": "pula legitymacji", "unit": "pp indeksu złożonego", "finite": true, "payer": "populacja", "metering": "post-hoc i pośrednie; najlepsze proxy to udział rozstrzygnięć wykonanych dobrowolnie bez wszczęcia egzekucji" },
+    { "id": "RES-A-03", "name": "budżet uwagi lidera", "unit": "judge-hour (~313 PLN [EST])", "finite": true, "payer": "budżet publiczny", "metering": "brak admission control per sprawa; 2.0-5.3 h/sprawę vs 20.8 h samego czytania przy aktach 1000 str" },
+    { "id": "RES-A-04", "name": "czas kalendarzowy / lease", "unit": "dzień", "finite": true, "payer": "wyłącznie strona", "metering": "jednostronne — termin strony zawity, termin organu instrukcyjny; brak view-change" },
+    { "id": "RES-A-05", "name": "custody dowodu", "unit": "liczba posiadaczy o rozbieżnych interesach", "finite": true, "payer": "strona żądająca", "metering": "brak klasyfikacji; podaż ustalona w S0, poza zasięgiem procedury" },
+    { "id": "RES-A-06", "name": "głębokość rollbacku", "unit": "instancja", "finite": true, "payer": "strona i system", "metering": "formalne, nie merytoryczne; floorStage=S3 leży wyżej niż źródło defektów (S1/S2)" },
+    { "id": "RES-A-07", "name": "budżet strony", "unit": "PLN", "finite": true, "payer": "strona", "metering": "rynkowe; wyznacza r w O(r*|F|), więc pokrycie stanu jest funkcją budżetu" },
+    { "id": "RES-A-08", "name": "kotwica semantyczna", "unit": "theta [1/rok]", "finite": true, "payer": "wszyscy, przez wzrost kosztu przewidywania", "metering": "brak; stosunek stałych czasowych zużycia do odbudowy ~10^2" },
+    { "id": "RES-A-09", "name": "obserwowalność", "unit": "obs w [0,1]; wydatek w du", "finite": true, "payer": "wszyscy", "metering": "drift(); progi D_crit=50 du (sterowalność) i D*=100 du (sens)" },
+    { "id": "RES-A-10", "name": "nieodwracalność egzekucji", "unit": "zdarzenie niekompensowalne", "finite": false, "payer": "podmiot egzekucji", "metering": "brak klasyfikacji compensable przed wywołaniem; jeden próg finalizacji dla obu klas efektów" }
+  ],
+
+  "nonnegotiables": [
+    { "id": "NN-A-01", "claim": "Log append-only z haszami commitowanymi poza kontrolą organu.", "argument_type": "invariant", "sketch": "Bez zewnętrznego commitu INV-A-01 jest naruszalny przez pojedynczego aktora w czasie O(n) (minuty) i niewykrywalnie: po podmianie wpisu i przeliczeniu łańcucha isAppendOnly zwraca true. Zewnętrzny commit wymaga kolizji SHA-256 (2^128) albo skorumpowania innej puli reputacyjnej." },
+    { "id": "NN-A-02", "claim": "Zewnętrznie commitowany timestamp wpływu i każdej zmiany kolejności.", "argument_type": "game-theoretic", "sketch": "V_MEV = P(zmiana wyniku|opóźnienie)*stawka > 0, więc zwłoka jest produktem. Kolejka traci punkt stały przy beta > 0.00662 (wyróżnik lambda^2 - lambda(mu+lambda0) + lambda0*mu + lambda0*beta = 0). Próg 0.66% jest nierealistycznie niski do nieprzekroczenia. Timestamp obniża beta, bo czyni zwłokę atrybucyjną. Koszt ~10^-6 kosztu sprawy." },
+    { "id": "NN-A-03", "claim": "Zbiór weryfikujący rozłączny z pulą reputacyjną weryfikowanego.", "argument_type": "impossibility", "sketch": "P_joint(p,rho,n) = rho*p + (1-rho)*p^n jest ograniczone z dołu przez rho*p niezależnie od n. Przy p=0.10, rho=0.7 [EST]: n=3 daje 0.930 zamiast 0.999; dziesiąta instancja wnosi 0.03 pp. Redundancja jednorodna ma sufit 3 pp wyczerpany po drugiej instancji, a przez LOOP-A-07 każda kolejna pogarsza system netto." },
+    { "id": "NN-A-04", "claim": "Verdict niesie pełny Completeness, w tym calibrated.support.", "argument_type": "impossibility", "sketch": "Detektor d: PublicOutput -> {evidence, authority} nie istnieje, bo dziedzina nie zawiera informacji odróżniającej: oba tryby produkują uzasadnienie o tej samej gramatyce (switchEmitsSameShape). Nie jest to trudność statystyczna, tylko niewystarczalność dziedziny. Dodanie jednej liczby czyni detekcję O(1) i odblokowuje różnicowanie progu dla RES-A-10." },
+    { "id": "NN-A-05", "claim": "Activation height dla precedensu; zakaz semantyki wstecznej.", "argument_type": "invariant", "sketch": "Przy declarativeBackdate=true interpretationAt zależy nie od argumentu at, lecz od zbioru precedensów znanych w chwili wywołania, więc delta jest funkcją stanu i wall-clock. To narusza INV-A-03, uniemożliwia replay i audyt. Sprawdzone wykonawczo: sprawa o Lamport=100 dostaje SchemaVersion=2 z precedensu aktywowanego na 500." },
+    { "id": "NN-A-06", "claim": "Version vectors znaczeń; zakaz last-write-wins.", "argument_type": "counterexample", "sketch": "LWW ma udowodnioną własność lost update. Kontrprzykład wykonany: vA={rażące_niedbalstwo:3} i vB={rażące_niedbalstwo:2, należyta_staranność:1} są concurrent; LWW zwraca conflict:false (cicha strata vA), MV zwraca conflict:true. Koszt różnicy to jedno pole metadanych, porównanie O(|V|)." },
+    { "id": "NN-A-07", "claim": "Dual custody albo jawna flaga single-custody dla faktów decisive.", "argument_type": "impossibility", "sketch": "Przy P(wykrycie)->0 nieujawnienie faktu szkodliwego jest strategią dominującą, więc fakt nie należy do przecięcia kworów i zbieżność jest formalnie niemożliwa. Nie żądam zbieżności tam, gdzie jest niemożliwa — żądam oznaczenia. Rozszerzenie: fakty u posiadaczy OBOJĘTNYCH też wymagają przymusu, bo koszt ujawnienia dodatni, korzyść zerowa." },
+    { "id": "NN-A-08", "claim": "Publiczny licznik force_gas per organ.", "argument_type": "impossibility", "sketch": "chargeUnchecked nie ma konstruktora błędu, więc niewypłacalność jest osiągalna bez sygnału; detekcja post-hoc, opóźniona 3-15 lat, nieprzypisywalna. Licznik nie wymaga nowej wiedzy (mode znany w chwili commitu, zapis O(1)) i jest jedyną tanią dźwignią na znak LOOP-A-01, bo rho jest mnożone przez obserwowalność." },
+    { "id": "NN-A-09", "claim": "Doręczenie ACK-based z eskalacją na kanał niezależny; fikcja tylko jako oznaczona degradacja.", "argument_type": "impossibility", "sketch": "Common knowledge nieosiągalne przy zawodnym kanale (dwóch generałów), więc assume jest konieczne. Kwestionuję dwie rzeczy: retry na tym samym kanale daje P(obie nieudane)~p zamiast p^2 (redundancja jednorodna udająca niezależną, ta sama wada co w NN-A-03), a p_loss jest skorelowane z klasą pozwanego. W ścieżce S1->S5 Q_pozwany jest puste, więc przecięcie kworów puste trywialnie." },
+    { "id": "NN-A-10", "claim": "d_max deklarowane przed commitem; klasyfikacja compensable przed wywołaniem efektu w S7.", "argument_type": "counterexample", "sketch": "Kontrprzykład: strony alokują RES-A-07 w S2 pod błędny model d_max, a S2 jest jedynym etapem, na którym ta alokacja ma znaczenie (THM-A-01); błąd jest nieodwracalny i wywołany brakiem deklaracji. Dla RES-A-10: dwufazowy commit z osobnym progiem dla operacji nieodwracalnych wymaga NN-A-04, bez pewności nie ma czym różnicować progu." }
+  ],
+
+  "concessions": [
+    { "id": "CON-A-01", "stage": "S2", "gives_up": "runtime'owy pomiar custody per fakt na rzecz statycznej klasyfikacji po typie dowodu", "cost": 12, "unit": "du", "accumulation": "liniowa a=0.15/rok", "reversible": "full", "revocation_predicate": "misclassification_rate > 0.05 przez 2 kolejne okresy pomiarowe", "lens": "typy/weryfikacja", "channel_family": "observability", "status": "granted" },
+    { "id": "CON-A-02", "stage": "S5", "gives_up": "calibrated.support jako liczba; enum {evidence|authority} zamiast wartości", "cost": 9, "unit": "du", "accumulation": "wykładnicza lambda=0.10/rok", "reversible": "partial", "revocation_predicate": "nadwyżka wariancji między-referatowej > 0.15 przez 3 okresy", "lens": "typy/weryfikacja", "channel_family": "observability", "status": "rejected", "rejection_reason": "rodzina observability już zajęta przez CON-A-01; suma na jednym kanale przekracza połowę budżetu 50 du" },
+    { "id": "CON-A-03", "stage": "S4", "gives_up": "twarde FIFO po zewnętrznym timestampie na rzecz regulatora kolejki z priorytetami (atrybucyjność zachowana, NN-A-02 nietknięte)", "cost": 5, "unit": "du", "accumulation": "liniowa a=0.08/rok", "reversible": "full", "revocation_predicate": "|korelacja(priorytet, atrybuty strony)| > 0.2 albo brak re-audytu wag > 24 miesiące", "lens": "sterowanie/mechanizmy", "channel_family": "ordering", "status": "granted" },
+    { "id": "CON-A-04", "stage": "S8", "gives_up": "activation height jako punkt; przyjęcie activation interval, replay jako inkluzja zamiast równości", "cost": 7, "unit": "du", "accumulation": "progowa T*=3 lata, M=2.5", "reversible": "partial", "revocation_predicate": "udział spraw o niesingletonowym wyniku replayu > 0.2", "lens": "sterowanie/mechanizmy", "channel_family": "replay", "status": "rejected", "rejection_reason": "skok progowy o 10.5 du w jednym roku, nieabsorbowalny przy budżecie 50 du" },
+    { "id": "CON-A-05", "stage": "S6", "gives_up": "d_max jako stała systemowa; parametr strojony per klasa spraw (deklaracja przed commitem zachowana)", "cost": 4, "unit": "du", "accumulation": "liniowa a=0.05/rok", "reversible": "full", "revocation_predicate": "|korelacja(d_max, atrybuty strony)| > 0.15 albo d_max < 1 dla jakiejkolwiek klasy", "lens": "sterowanie/mechanizmy", "channel_family": "replay", "status": "granted" },
+    { "id": "CON-A-06", "stage": "S3", "gives_up": "publiczność listy droppedByPreclusion; przeniesienie do audit logu", "cost": 8, "unit": "du", "accumulation": "wykładnicza lambda=0.12/rok", "reversible": "partial", "revocation_predicate": "liczba niezależnych podmiotów, które wykonały audyt, < 3/rok", "lens": "sterowanie/mechanizmy", "channel_family": "observability", "status": "rejected", "rejection_reason": "trzecie ustępstwo w rodzinie observability; najszybsza kappa w zbiorze" },
+    { "id": "CON-A-07", "stage": "S1", "gives_up": "runtime ACK jako warunek konieczny; proof-carrying delivery (dowód próby zamiast dowodu skutku)", "cost": 3, "unit": "du", "accumulation": "liniowa a=0.04/rok", "reversible": "full", "revocation_predicate": "iloraz szans wyroków zaocznych między skrajnymi klasami pozwanego > 3", "lens": "typy/weryfikacja", "channel_family": "delivery", "status": "granted" },
+    { "id": "CON-A-08", "stage": "S2", "gives_up": "model awarii skorelowanej w warstwie mechanizmu; przyjęcie i.i.d. z osobnym correlation budget", "cost": 6, "unit": "du", "accumulation": "progowa T*=4 lata, M=3.0", "reversible": "none", "revocation_predicate": "rho_empiryczne > 0.3", "lens": "sterowanie/mechanizmy", "channel_family": "failure-model", "status": "rejected", "rejection_reason": "jedyne nieodwracalne ustępstwo w zbiorze; predykat odwołania jest atrapą, bo cofnięcie wymaga przeprojektowania mechanizmu" }
+  ],
+
+  "drift_model": {
+    "unit": "du",
+    "unit_definition": "1 du = utrata 1 pp zdolności zewnętrznego obserwatora z dostępem do publicznego logu do odróżnienia evidence-commit od authority-commit",
+    "formula": "D(t) = sum_i c_i*kappa_i(t)*[not R_i(t)] + gamma * sum_{i<j, same_family} c_i*c_j*[not R_i(t)]*[not R_j(t)]",
+    "gamma": 0.02,
+    "gamma_rationale": "utrata dwóch kanałów pomiaru w tej samej rodzinie usuwa także możliwość krzyżowania danych, czyli więcej niż sumę",
+    "threshold_controllability_du": 50,
+    "threshold_controllability_derivation": "obs_crit = delta*a/rho_max = 0.025/0.05 = 0.5, więc D_crit = 100*(1-0.5); powyżej tego progu znak LOOP-A-01 jest dodatni",
+    "threshold_sense_du": 100,
+    "threshold_sense_derivation": "obs=0 => rho=0 => e_{t+1} = (1+delta*a)*e_t + delta*F0 jest ściśle rozbieżne bezwarunkowo",
+    "binding_threshold": 50,
+    "full_candidate_set": { "count": 8, "nominal_du": 54, "D_at_t0": 60.08, "verdict": "niedopuszczalny od t=0" },
+    "granted_set": { "ids": ["CON-A-01","CON-A-03","CON-A-05","CON-A-07"], "count": 4, "nominal_du": 24, "D_at_t0": 24.0, "max_D_over_10y": 49.2, "coupling_term_du": 0 },
+    "crossings_if_not_revoked": { "D_crit_50_du_at_years": 10.5, "D_star_100_du_at_years": 30.5 },
+    "concessions_to_threshold_at_t0": { "mean_cost_du": 6.75, "N_star_for_50_du": 7, "N_star_for_100_du": 12 },
+    "key_finding": "Dryf jest zdominowany przez czas, nie przez liczbę: 4 ustępstwa bez wygasania są w horyzoncie 10.5 roku równoważne 7 przyznanym naraz. Ustępstwo bez wykonalnego predykatu odwołania ma koszt c_i*kappa_i(nieskończoność), czyli nieskończony."
+  },
+
+  "phenomena_coverage": {
+    "force_gas": "PRIM-A-06 + RES-A-01 + LOOP-A-01 + LOOP-A-06 (THM-A-04 brak pre-check, THM-A-11 wymuszenie zasobowe przy B<C)",
+    "majesty_switch": "ALG-A-05 (majestySwitch) + THM-A-05 (predykat: H>theta AND (lease<tau OR koszt>budżet); nieobserwowalność jako równowaga, nie zaniedbanie)",
+    "reputation_coupling": "Objective (wClient/wSelf/wSystem) + LOOP-A-02 + THM-A-07 (skorelowana awaria łamie próg bizantyjski, podłoga rho*p niezależna od n)",
+    "retroactive_relativization": "EntryKind.correction + INV-A-01 + LOOP-A-02 (przy braku zewnętrznego commitu hashy operacja bez śladu, nie tylko bez sankcji)",
+    "onto_epistemic_drift": "PRIM-A-09 VersionVector + mergeMeaning + LOOP-A-05 (theta=0 => random walk, sd=sigma*sqrt(t); LWW ma lost update, MV nie)",
+    "stage_corruption": "THM-A-01 + brak krawędzi S6->S2 w TRANSITIONS + FAIL-A-01 (apelacja to replay na zamrożonym logu, naprawia funkcję przejścia, nigdy wejście; udział >= 14-33% [EST])",
+    "systemic_blindness": "THM-A-05 + LOOP-A-04 + PublicJustification.calibratedSupport=null (8 z 10 trybów awarii niewykrywalnych, wszystkie naprawialne metadanymi)",
+    "saint_dependency": "n=1 => f_max=0 (00-MODEL sekcja 1.1) + LOOP-A-07 + THM-A-07 (apelacja nie jest N-version programming, tylko tą samą implementacją na innym hoście)"
+  },
+
+  "open_conflicts_expected": [
+    "NN-A-04 (skalibrowana pewność) vs soczewka typów/weryfikacji: będą chcieli sumy typów zamiast liczby, bo enum jest statycznie rozstrzygalny, a kalibracja nie. Nie ustąpię, bo bez liczby nie da się policzyć Brier score, więc nie istnieje sprzężenie korygujące kalibrację i nie da się odróżnić deklarowanej pewności od trafnej. Skala porządkowa ('wysokie/średnie/niskie') jest tu gorsza niż nic, bo tworzy pozór pomiaru.",
+    "NN-A-03 (heterogeniczność puli) vs soczewka mechanism design: będą projektować incentive-compatible mechanizm przy założeniu niezależnych typów agentów. Nie ustąpię w warstwie architektury, bo skorelowany komponent celu daje podłogę rho*p niezależną od n — to jest dowód niemożliwości, nie parametr do strojenia. Incentive design przyjmuję jako warstwę DODATKOWĄ, nigdy jako substytut heterogeniczności; CON-A-08 odrzucam właśnie dlatego, że jest nieodwracalne.",
+    "Safety vs performance: soczewka sterowania będzie traktować niezmienniki jako ograniczenia miękkie podlegające tradeoffowi (regulator dopuszcza przeregulowanie, jeśli średnia jest dobra). Nie ustąpię dla INV-A-01, INV-A-03 i RES-A-10: to są własności typu safety ('nigdy'), a nie liveness ('w końcu') ani performance ('średnio'). Protokół konsensusu nie może dopuścić double-spend 'czasem', a egzekucja niekompensowalna nie ma trybu uśrednionego — jedno wywołanie wyczerpuje cały zasób odwracalności.",
+    "Weryfikacja specyfikacji vs weryfikacja deploymentu: soczewka formalna dostarczy dowód poprawności specyfikacji. Uznaję dowód, ale nie uznaję wniosku: komponent wykonujący (PRIM-A-05) jest człowiekiem, nie ma redundancji heterogenicznej (n=1, f_max=0) i nie podlega weryfikacji statycznej. Zweryfikowana specyfikacja przy niezweryfikowanej implementacji daje zero gwarancji end-to-end i grozi przeniesieniem zaufania z miejsca, gdzie jest zasłużone (spec), na miejsce, gdzie nie jest (runtime).",
+    "THM-A-06 (activation height) vs argument o nieciągłości: obie pozostałe soczewki mogą podnieść, że twardy próg aktywacji jest zaburzeniem skokowym i że dwie sprawy różniące się o jeden dzień dostają różną semantykę. Argument uznaję za trafny — dlatego CON-A-04 w ogóle rozważałem — ale odrzucam go liczbowo (skok 10.5 du w jednym roku), nie doktrynalnie. Gotów jestem wrócić do tego ustępstwa, jeżeli budżet dryfu zwolni się przez odwołanie innego."
+  ]
+}
