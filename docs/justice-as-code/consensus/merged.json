@@ -1,0 +1,452 @@
+{
+  "schema": "justice-as-code/consensus/merged/1.0",
+  "phase": "consensus",
+  "inputs": ["agent-a", "agent-b", "agent-c"],
+  "protocol": "docs/justice-as-code/PROTOCOL.md",
+  "procedure": "docs/justice-as-code/CONSENSUS-PHASE.md",
+
+  "headline": {
+    "authority_nonobservability_convergence": "two-way (A,B), one argument in two vocabularies; C does not make the claim",
+    "conflicts": { "DECIDABLE": 17, "EMPIRICAL": 5, "FOUNDATIONAL": 3, "total_rival": 25 },
+    "units_commensurable": false,
+    "drift_total_is_vector": true,
+    "merge_quality": "FRAGILE",
+    "reversibility": "LOSSY",
+    "nonnegotiables_total": 26,
+    "nonnegotiables_refuted": 0,
+    "nonnegotiables_intact": 26,
+    "non_nn_claims_refuted": 9,
+    "concessions_granted_declared": 22,
+    "concessions_void_premise_failed": 14,
+    "concessions_in_force": 8
+  },
+
+  "correspondence": {
+    "by_phenomenon": [
+      {
+        "key": "force_gas",
+        "constructs": { "A": ["PRIM-A-06", "RES-A-01", "LOOP-A-01", "LOOP-A-06", "THM-A-04"], "B": ["RES-B-01", "RES-B-07", "PRIM-B-15", "THM-B-14", "LOOP-B-05"], "C": ["RES-C-01", "LOOP-C-04", "ALG-C-05"] },
+        "relations": [
+          { "pair": ["RES-A-01", "RES-B-07", "RES-C-01"], "relation": "RIVAL", "reason": "ten sam referent, trzy rozne tryby awarii: fork / brak / twarde nasycenie; sprzeczne deklaracje skonczonosci", "conflict": "CONF-E-01" },
+          { "pair": ["RES-A-03", "RES-B-01", "RES-C-05"], "relation": "SAME", "reason": "uwaga orzecznicza; jednostki przeliczalne 1 judge-hour = 3600 s = 120 vgas" },
+          { "pair": ["RES-B-01", "RES-A-01"], "relation": "ORTHOGONAL", "reason": "vgas to budzet dowodu, FG to wydatek zamiast dowodu; zwiazek przyczynowy THM-B-14 => LOOP-B-05, nie tozsamosciowy" }
+        ]
+      },
+      {
+        "key": "majesty_switch",
+        "constructs": { "A": ["ALG-A-05", "THM-A-05"], "B": ["ALG-B-02", "THM-B-03", "THM-B-04"], "C": ["ALG-C-05", "LOOP-C-05"] },
+        "relations": [
+          { "pair": ["ALG-A-05", "ALG-C-05"], "relation": "SAME", "reason": "predykat wyzwolenia: prog na niepewnosci zlozony z ograniczeniem zasobowym" },
+          { "pair": ["ALG-B-02", "ALG-A-05"], "relation": "ORTHOGONAL", "reason": "u B wyzwalaczem jest TYP bledu (SubsumptionError), nie prog ilosciowy; switch zachodzi takze przy pelnym budzecie gdy norma jest undefined" },
+          { "pair": ["THM-A-05", "THM-B-04"], "relation": "SAME", "reason": "nieinjektywnosc odwzorowania obserwacji; jeden argument w dwoch slownikach, waga 1 nie 2", "agreement": "AGR-01" },
+          { "pair": ["THM-A-05", "NN-C-05"], "relation": "ORTHOGONAL", "reason": "A o trybie per sprawa (nieodzyskiwalny), C o stopie agregatowej (obliczalna po dodaniu etykiety); NN-B-03 jest przeslanka wykonalnosci NN-C-05" }
+        ]
+      },
+      {
+        "key": "reputation_coupling",
+        "constructs": { "A": ["LOOP-A-02", "THM-A-07"], "B": ["LOOP-B-02", "THM-B-13", "FAIL-B-07"], "C": ["LOOP-C-01", "ALG-C-01", "RES-C-02"] },
+        "relations": [
+          { "pair": ["LOOP-A-02", "LOOP-B-02", "LOOP-C-01"], "relation": "SAME", "reason": "ten sam warunek poprawnosci, ten sam tryb awarii (podstawienie celu), i we wszystkich trzech wzmocnienie jest funkcja obserwowalnosci", "agreement": "AGR-04" }
+        ]
+      },
+      {
+        "key": "retroactive_relativization",
+        "constructs": { "A": ["EntryKind.correction", "INV-A-01", "PRIM-A-04"], "B": ["THM-B-01.2", "THM-B-15", "LOOP-B-01"], "C": ["LOOP-C-03", "RES-C-08", "FAIL-C-01"] },
+        "relations": [
+          { "pair": ["PRIM-A-04", "THM-B-15", "LOOP-C-03"], "relation": "ORTHOGONAL", "reason": "trzy rozne nosniki (log / cache denotacji / zmienna stanu) i trzy rozne tryby awarii; kryterium tozsamosci nie pozwala zlepic", "agreement": "AGR-08" }
+        ]
+      },
+      {
+        "key": "onto_epistemic_drift",
+        "constructs": { "A": ["PRIM-A-09", "LOOP-A-05", "RES-A-08"], "B": ["THM-B-12", "LOOP-B-06", "M-B-01"], "C": ["LOOP-C-03", "PRIM-C-08", "NN-C-04", "RES-C-08"] },
+        "relations": [
+          { "pair": ["PRIM-A-09", "PRIM-B-08", "PRIM-C-08"], "relation": "ORTHOGONAL", "reason": "V rejestruje ktore znaczenie, Gamma ile kontekstu naroslo, Theta jak daleko przesunal sie wzorzec; trojka (V, Gamma, Theta)" },
+          { "pair": ["NN-A-06", "NN-C-04"], "relation": "PRECONDITION", "reason": "Theta jest mierzalne tylko przy wersjonowanych znaczeniach; NN-A-06 jest przeslanka wykonalnosci NN-C-04" },
+          { "pair": ["RES-A-08", "RES-C-08"], "relation": "INCOMMENSURABLE", "reason": "theta jest tempem [1/rok], Theta poziomem [0,1]; przeliczenie wymaga calkowania po szukanej trajektorii" }
+        ]
+      },
+      {
+        "key": "stage_corruption",
+        "constructs": { "A": ["THM-A-01", "FAIL-A-01", "LOOP-A-03"], "B": ["THM-B-07", "THM-B-08", "FAIL-B-05", "LOOP-B-07"], "C": ["LOOP-C-06", "INV-C-06", "NN-C-06"] },
+        "relations": [
+          { "pair": ["THM-A-01", "THM-B-07", "NN-C-06"], "relation": "SAME", "reason": "trzy w pelni niezalezne argumenty: osiagalnosc w grafie / logika Hoare'a / dekompozycja wariancji", "agreement": "AGR-06" },
+          { "pair": ["LOOP-B-07", "LOOP-C-07"], "relation": "RIVAL", "reason": "B: petla za slaba i dzieli oracle; C: petla dziala przy 97.5% marginesu opoznienia", "conflict": "CONF-D-16" }
+        ]
+      },
+      {
+        "key": "systemic_blindness",
+        "constructs": { "A": ["THM-A-05", "LOOP-A-04"], "B": ["THM-B-05", "THM-B-02", "LOOP-B-04", "FAIL-B-04"], "C": ["LOOP-C-02", "INV-C-01", "NN-C-01", "NN-C-02"] },
+        "relations": [
+          { "pair": ["THM-A-05", "THM-B-05", "INV-C-01"], "relation": "ORTHOGONAL", "reason": "trzy rozne zrodla slepoty: bodzcowe / obliczeniowe / strukturalne", "agreement": "AGR-01" }
+        ]
+      },
+      {
+        "key": "saint_dependency",
+        "constructs": { "A": ["LOOP-A-07", "THM-A-07"], "B": ["PRIM-B-17", "LOOP-B-08", "NN-B-07"], "C": ["LOOP-C-08", "RES-C-06", "FAIL-C-05"] },
+        "relations": [
+          { "pair": ["LOOP-A-07", "LOOP-B-08", "LOOP-C-08"], "relation": "SAME", "reason": "trzy w pelni niezalezne argumenty: kolejkowy / typowy / niezawodnosciowy; najsilniejsza zbieznosc scalenia", "agreement": "AGR-05" }
+        ]
+      }
+    ],
+
+    "by_stage": [
+      { "stage": "S0", "A": "PRIM-A-02", "B": "PRIM-B-01", "C": "brak wiersza w macierzy C", "relation": "SAME", "note": "stan swiata poza obserwowalnoscia; brak klucza != false" },
+      { "stage": "S1", "A": "INV-A-05, INV-A-09, NN-A-09", "B": "PRIM-B-02 (rzut pi bez lewego odwrotu)", "C": "pierwsze zrodlo V_p, INV-C-06", "relation": "ORTHOGONAL", "note": "A modeluje kanal, B stratnosc rzutu, C wariancje rutowania" },
+      { "stage": "S2", "A": "INV-A-02, RES-A-05, NN-A-07", "B": "PRIM-B-03, NN-B-05, INV-B-07, NN-B-02", "C": "zmienna O, NN-C-01, NN-C-02, NN-C-03", "relation": "ORTHOGONAL", "note": "SAME na parze NN-B-02 (proba audytowa) == NN-C-01 (czujnik out-of-band)" },
+      { "stage": "S3", "A": "RES-A-06, droppedByPreclusion", "B": "INV-B-04, NN-B-06, INV-B-08, THM-B-08", "C": "hard deadline aktuatora, nie backpressure", "relation": "RIVAL", "conflict": "CONF-D-10", "note": "rozstrzygniete: jawny error budget z out-of-gas, nie sam timeout" },
+      { "stage": "S4", "A": "ALG-A-05, INV-A-06, INV-A-03", "B": "ALG-B-01, ALG-B-02, THM-B-14, INV-B-06", "C": "ALG-C-05, INV-C-07", "relation": "SAME", "note": "SAME co do lokalizacji switcha, ORTHOGONAL co do wyzwalacza" },
+      { "stage": "S5", "A": "INV-A-04, INV-A-06, INV-A-07", "B": "INV-B-01, INV-B-05, NN-B-01, PRIM-B-10", "C": "jedyne przejscie inkrementujace E", "relation": "ORTHOGONAL", "conflict": "CONF-D-02", "note": "RIVAL o finality pozorny; przeslanka obalona" },
+      { "stage": "S6", "A": "THM-A-01, NN-A-10, INV-A-10, RES-A-06", "B": "THM-B-07, THM-B-10, LOOP-B-07", "C": "LOOP-C-07, NN-C-08, tau_a = 8 kw", "relation": "RIVAL", "conflict": "CONF-D-16", "note": "rozstrzygniete korekta gamma_eff = gamma_0 * O * (1 - phi_input)" },
+      { "stage": "S7", "A": "RES-A-10, NN-A-10, INV-A-09", "B": "CON-B-09 (pole saturation)", "C": "efekty nieodwracalne, E nie w pelni drenowalne", "relation": "SAME", "note": "CON-B-09 usuwa przeszkode bodzcowa THM-A-05" },
+      { "stage": "S8", "A": "NN-A-05, NN-A-06, INV-A-08", "B": "NN-B-04, THM-B-09, THM-B-15, PRIM-B-08", "C": "NN-C-04, PRIM-C-08", "relation": "SAME", "conflict": "CONF-D-06", "note": "SAME dla pary A-B; ORTHOGONAL dla Theta; rama = trojka (V, Gamma, Theta)" },
+      { "stage": "Sx-B-LINK", "A": null, "B": "INV-B-02, THM-B-05, RES-B-04", "C": null, "relation": "OWN-STAGE", "note": "etap wlasny B; scalenie dziedziczy zobowiazanie Theta(n^2 * SAT) niesfinansowane" }
+    ]
+  },
+
+  "conflicts": [
+    { "id": "CONF-D-01", "label": "DECIDABLE", "stage": "S4", "title": "liveness w S4", "parties": ["B", "C", "A"], "resolution": "przeslanka obalona: FLP nie stosuje sie przy n=1 (hipotezy n>=2, f>=1 nie zachodza); NN-A-07 zada oznaczenia, nie zbieznosci; RES-A-01 i PRIM-A-11 opisuja brak out-of-gas jako defekt", "voids": ["CON-B-01", "CON-C-07"], "nn_touched": [] },
+    { "id": "CONF-D-02", "label": "DECIDABLE", "stage": "S5", "title": "finality w S5", "parties": ["C", "A", "B"], "resolution": "wlasnosci safety sa domkniete na prefiksy (Alpern-Schneider) i nie wymagaja punktu finalnosci; LOOP-A-03 bez czlonu wycofania, THM-B-10 res judicata jako truncation", "voids": ["CON-C-02"], "nn_touched": [] },
+    { "id": "CONF-D-03", "label": "DECIDABLE", "stage": "S5", "title": "NN-A-04 kontra soczewka typow", "parties": ["A", "B"], "resolution": "konflikt nie istnieje: NN-B-05 i INV-B-07 same wymagaja liczby z progiem tau; PRIM-B-10 dotyczy przestrzeni WYNIKOW, nie pewnosci co do podstawy faktycznej. Reszta sporu rozstrzygnieta konstruktywnie: CON-B-09 dodaje ciagly wymiar S7, czyli zmiane wymagana przez THM-A-05", "voids": [], "nn_touched": ["NN-A-04", "NN-B-05"], "nn_status": "oba nienaruszone" },
+    { "id": "CONF-D-04", "label": "DECIDABLE", "stage": "S3", "title": "safety kontra performance", "parties": ["A", "C", "B"], "resolution": "roznica pozorna: minimalny zbior NN C {NN-C-01 rank=2, NN-C-02 rho=0, NN-C-03 c_d=0} sklada sie z predykatow twardych, dwoch rownosci dokladnych; soczewka odrzucajaca predykaty twarde odrzucalaby wlasny zbior minimalny", "voids": ["CON-B-06"], "nn_touched": ["INV-A-01", "INV-A-03", "RES-A-10"], "nn_status": "nienaruszone" },
+    { "id": "CONF-D-05", "label": "DECIDABLE", "stage": "S2", "title": "fakt jako zgoda kworum", "parties": ["B", "C", "A"], "resolution": "przeslanka obalona: teza A mowi ze quorum intersection jest strukturalnie niespelnialne; NN-A-07 zada oznaczenia. Atrybucja indywidualna wymagana przez INV-A-06, NN-A-08, NN-B-03", "voids": ["CON-B-02", "CON-C-03"], "nn_touched": ["NN-A-07", "NN-B-05"], "nn_status": "nienaruszone" },
+    { "id": "CONF-D-06", "label": "DECIDABLE", "stage": "S8", "title": "eventual consistency", "parties": ["B", "A"], "resolution": "przeslanka obalona: INV-A-03, NN-A-05, NN-A-06, INV-A-08 zadaja determinizmu replayu; A odrzucil wlasne CON-A-04. Dodatkowo zidentyfikowano SAME: NN-A-05+NN-A-06+INV-A-08 == NN-B-04+INV-B-06", "voids": ["CON-B-03"], "nn_touched": ["NN-A-05", "NN-A-06", "NN-B-04"], "nn_status": "nienaruszone i wzajemnie wzmocnione" },
+    { "id": "CONF-D-07", "label": "DECIDABLE", "stage": "S5", "title": "rozniczkowalna funkcja straty na przestrzeni orzeczen", "parties": ["B", "C"], "resolution": "przeslanka falszywa. Konstrukcja: metryka dyskretna delta na typie sumarycznym z rozstrzygalna rownoscia, q_hat = 1 - (1/N) sum delta(j_i, j*_i) w [0,1]; wartosc oczekiwana ograniczonej straty dyskretnej przy gladkiej rodzinie rozkladow jest gladka, wiec gradient istnieje bez metryki miedzykonstruktorowej. Zaden artefakt C nie zada metryki na Judgment: PRIM-C-02 operuje na agregatach, NN-C-06 na wariancji kategorialnej", "voids": ["CON-B-05"], "nn_touched": [], "note": "najkosztowniejsze uniewaznienie: 4.5 vbit, odwracalnosc none, g=0.25/rok; wg B pojedynczo odpowiedzialne za przesuniecie t* z ~4 lat na 1.6 roku" },
+    { "id": "CONF-D-08", "label": "DECIDABLE", "stage": "S1..S5", "title": "estymacja z proxy kontra instrumentacja bezposrednia", "parties": ["B", "C"], "resolution": "przeslanka obalona: PRIM-C-05 dziala wylacznie na podprzestrzeni obserwowalnej, NN-C-01 zada nowego wiersza macierzy C, LEV-C-03 to jedyna dzwignia przywracajaca range. Warunek obalenia NN-B-02 sam zada walidacji na probie audytowej", "voids": ["CON-B-07"], "nn_touched": [], "synergy": "proba audytowa NN-B-02 == czujnik out-of-band NN-C-01 (SAME)" },
+    { "id": "CONF-D-09", "label": "DECIDABLE", "stage": "S4", "title": "n=1 kontra tolerancja bizantyjska", "parties": ["B", "A", "C"], "resolution": "adresat bledny: A trzyma n=1 jako teze i obala prog bizantyjski (THM-A-07, NN-A-03). Adresat rzeczywisty to C: INV-C-07, RES-C-06, FAIL-C-05. Ustepstwo zachowane z riderem INV-A-10 (panel heterogeniczny)", "voids": [], "kept": ["CON-B-08"], "readdressed": { "CON-B-08": { "from": "A", "to": "C" } } },
+    { "id": "CONF-D-10", "label": "DECIDABLE", "stage": "S3", "title": "error budget kontra bounded retry", "parties": ["C", "A"], "resolution": "przeslanka falszywa: RES-A-01 i PRIM-A-11 opisuja brak pre-check i out-of-gas jako defekt (czyli zadaja error budgetu), RES-A-03 zada admission control, LOOP-A-08 krytykuje sterowanie po timeoucie jako Goodhart", "voids": ["CON-C-09"], "nn_touched": [] },
+    { "id": "CONF-D-11", "label": "DECIDABLE", "stage": "S1", "title": "prymat statycznej walidacji", "parties": ["C", "B"], "resolution": "przeslanka obalona: INV-B-01, INV-B-02, INV-B-05 maja violation_detectable=false; THM-B-14 czyni assume strukturalnie koniecznym; THM-B-05 stawia weryfikacje korpusu poza budzetem trwale", "voids": ["CON-C-04"], "nn_touched": ["INV-C-01", "INV-C-03"], "nn_status": "stanowisko C utrzymane bez sporu" },
+    { "id": "CONF-D-12", "label": "DECIDABLE", "stage": "S8", "title": "Theta zastapione dyskretnym wersjonowaniem", "parties": ["C", "A", "B"], "resolution": "przeslanka zachodzi dla DODANIA wersji, nie dla USUNIECIA Theta. Swiadek konstrukcyjny: model A trzyma jednoczesnie PRIM-A-09 (version vectors) i LOOP-A-05 (ciagla dyfuzja sigma=0.12/sqrt(rok))", "voids": ["CON-C-05"], "nn_touched": [], "note": "kumulacja wykladnicza h=32 kw wynikala z nieksiegowanego dryfu WEWNATRZ wersji, czyli z Theta; zachowanie Theta usuwa mechanizm kumulacji" },
+    { "id": "CONF-D-13", "label": "DECIDABLE", "stage": "S2", "title": "statyczna klasyfikacja custody", "parties": ["A", "B"], "resolution": "przeslanka obalona: zaden NN-B-* ani INV-B-* nie dotyczy custody; INV-B-04 (zamkniecie i haszowanie po S3) jest juz spelnione przez INV-A-01 + INV-A-05 przy koszcie 0 du", "voids": ["CON-A-01"], "nn_touched": ["INV-A-02"], "nn_status": "egzekwowane w pelnej formie runtime" },
+    { "id": "CONF-D-14", "label": "DECIDABLE", "stage": "S1", "title": "proof-carrying delivery", "parties": ["A", "B"], "resolution": "przeslanka obalona i ustepstwo tresciowo puste: B i C nie modeluja doreczenia; tresc pola 'na rzecz' (kanaly niezalezne, bounded retry, poprawna kolejnosc) jest doslownie trescia NN-A-09", "voids": ["CON-A-07"], "nn_touched": ["NN-A-09", "INV-A-09"], "nn_status": "w pelnej formie" },
+    { "id": "CONF-D-15", "label": "DECIDABLE", "stage": "S2/S5", "title": "NN-B-03 kontra NN-C-03 kontra sankcja A", "parties": ["A", "B", "C"], "resolution": "sprzecznosc pozorna: ALG-C-01 rozroznia c_d (koszt SAMOujawnienia) od c_m (kara za ZATAJENIE). Etykieta blame podnosi phi (wykrywalnosc), sankcja A to c_m, NN-C-03 zeruje c_d. Warunek O > c_d/(c_m*phi) zawiera wszystkie trzy czynniki. Realizacja: korekta : Blame -> Dzialanie o niepunitywnej wyplacie dla samoujawnienia, czyli LEV-C-05 blameless postmortem", "voids": [], "nn_touched": ["NN-B-03", "NN-C-03"], "nn_status": "oba nienaruszone i komplementarne" },
+    { "id": "CONF-D-16", "label": "DECIDABLE", "stage": "S6", "title": "gdzie lezy petla ujemna i ile wynosi gamma_eff", "parties": ["A", "B", "C"], "resolution": "dekompozycja E = E_input + E_transition; THM-A-01 i THM-B-07 niezaleznie dowodza, ze S6 drenuje wylacznie E_transition. gamma_eff = gamma_0 * O * (1 - phi_input) w [0.1205, 0.1547] /kw zamiast 0.1799; wykorzystanie marginesu opoznienia spada z 97.5% do 65-84%. Skutek przeciwny: E_input bez drenu => MRG-03", "voids": [], "nn_touched": ["NN-C-08"], "nn_status": "nienaruszone, przestaje byc pilne w trybie 97.5% marginesu" },
+    { "id": "CONF-D-17", "label": "DECIDABLE", "stage": "S4", "title": "INV-C-07 kontra wykonalnosc kolejkowa", "parties": ["A", "C", "B"], "resolution": "koniunkcja INV-C-07 (n>=2) z NN-A-03 (panel heterogeniczny) przy rho_q > 0.9 daje rho_q >= 1.8 > 1, kolejka niestabilna. Zapisane jako zewnetrzny warunek wstepny PRE-01: capacity >= n * capacity_0. Zaden niezmiennik nie oslabiony", "voids": [], "nn_touched": ["INV-C-07", "NN-A-03", "INV-A-10"], "nn_status": "wszystkie nienaruszone", "external_precondition": "PRE-01" },
+
+    { "id": "CONF-E-01", "label": "EMPIRICAL", "stage": "S4/S5", "title": "force_gas: skonczony z twardym progiem, skonczony bez pre-checku, czy nieskonczony", "parties": ["A", "B", "C"],
+      "experiment": {
+        "measure": "para (M, demand - M) wg NN-C-05, kwartalnie, >= 12 kwartalow; wskaznik nasycenia sigma = (demand - M)/demand",
+        "operationalization": "M = liczba wyrokow z mode=authority (INV-A-06) lub z niepustym zbiorem etykiet blame na krokach majesty (NN-B-03); demand = liczba spraw bez dowodu rozstrzygajacego w rozumieniu PRIM-B-03.measurement",
+        "thresholds": [
+          { "outcome": "sigma > 0.25 przez >= 4 kolejne kwartaly", "refutes": "B (RES-B-07 finite:false)" },
+          { "outcome": "sigma < 0.05 przez >= 12 kwartalow przy rosnacym demand", "refutes": "C (Gmax = 100 AU) i A (fork przy wyczerpaniu)" },
+          { "outcome": "M maleje przy rosnacym demand", "confirms": "C (FAIL-C-02)" }
+        ],
+        "precondition": "wymaga kanalu obserwacji z AGR-02, ktory wg NN-A-04 i THM-B-04 nie istnieje w obecnej dziedzinie wyjscia; eksperyment jest warunkowy na wdrozeniu NN-B-03 + NN-A-08 + NN-A-04"
+      }
+    },
+    { "id": "CONF-E-02", "label": "EMPIRICAL", "stage": "S2/S6", "title": "rho: korelacja celow orzekajacych", "parties": ["A", "C"],
+      "experiment": {
+        "measure": "konstrukcja NN-C-06: pary spraw o niezaleznie zakodowanym izomorficznym stanie faktycznym, rozdzielone miedzy orzekajacych z roznych pul reputacyjnych; korelacja odchylen wyniku od referencji",
+        "positions": { "A": "rho = 0.7 [EST]", "C": "agent reprezentatywny, implicite rho ~ 1", "mechanism_design_default": "rho = 0" },
+        "thresholds": [
+          { "outcome": "rho < 0.3", "refutes": "agenta reprezentatywnego C oraz podloge NN-A-03 jako wiazaca" },
+          { "outcome": "rho > 0.9", "refutes": "oszacowanie rho = 0.7 A jako zanizone; Panel<n> przestaje pomagac przy dowolnym n" },
+          { "outcome": "0.3 <= rho <= 0.9", "refutes": "nikogo; oba modele stosowalne w swoich rezimach" }
+        ],
+        "bonus": "ten sam pomiar zwraca V_p/V dla NN-C-06 (predykcja 70.6%/82.2%, falsyfikacja przy < 35%)"
+      }
+    },
+    { "id": "CONF-E-03", "label": "EMPIRICAL", "stage": "S1/S2/S6", "title": "phi_input: udzial defektow pochodzacych z S1/S2", "parties": ["A"],
+      "experiment": {
+        "measure": "na probie out-of-band (NN-C-01): najwczesniejszy etap, na ktorym defekt jest juz obecny w zamrozonym logu (INV-A-01); klasyfikacja binarna S0-S2 kontra S3-S5",
+        "current_estimate": "phi_input w [0.14, 0.33] [EST] (A, THM-A-01), bez pomiaru",
+        "thresholds": [
+          { "outcome": "phi_input < 0.05", "effect": "MRG-03 przesuwa sie poza 90 lat [EST] i przestaje byc osia wiazaca" },
+          { "outcome": "0.05 <= phi_input <= 0.40", "effect": "MRG-03 wiaze; horyzont 6.6-34.5 roku [EST]" },
+          { "outcome": "phi_input > 0.40", "effect": "horyzont ponizej 7 lat; NN-B-06 staje sie jedynym NN o znaczeniu operacyjnym" }
+        ],
+        "alternative_falsification": "wskazanie procedury faktycznie zwracajacej kontrole do S2 z czestoscia >= czestosci powstawania defektow wejsciowych obala jednoczesnie THM-A-01 i THM-B-07"
+      }
+    },
+    { "id": "CONF-E-04", "label": "EMPIRICAL", "stage": "S2..S5", "title": "deficyt budzetu weryfikacji", "parties": ["A", "B", "C"],
+      "experiment": {
+        "measure": "faktyczny czas uwagi orzeczniczej per sprawa (RES-B-02, s) wobec zadaniowo-analitycznego oszacowania czasu wymaganego; jednostki przeliczalne 1 judge-hour = 3600 s = 120 vgas",
+        "positions": { "A": "deficyt 5.7x [EST]", "B": "deficyt 0.83-83x [EST]", "C": "mechanizm przelewu na RES-C-01, bez liczby" },
+        "thresholds": [
+          { "outcome": "deficyt < 1x", "refutes": "THM-B-14, a przez to LOOP-B-05, LOOP-B-09 i strukturalna koniecznosc assume" },
+          { "outcome": "deficyt > 10x", "refutes": "oszacowanie A (5.7x) jako zanizone" },
+          { "outcome": "koszt zobowiazan NN-* > 25% budzetu", "effect": "zobowiazania scalone nie mieszcza sie; wymagana priorytetyzacja, ktorej zaden model suwerenny nie przewiduje" }
+        ],
+        "merged_estimate": "550-820 s/sprawe [EST] = 0.15-0.23 judge-hour = 18-27 vgas; 3-11% RES-A-03, 1.5-2.3% RES-B-01"
+      }
+    },
+    { "id": "CONF-E-05", "label": "EMPIRICAL", "stage": "S8", "title": "stale_citation_rate", "parties": ["A", "B"],
+      "experiment": {
+        "measure": "udzial cytowan precedensow, w ktorych decidedUnder nie przecina sie z wersja w mocy w czasie zdarzenia sprawy cytujacej (INV-B-03, INV-B-06)",
+        "thresholds": [
+          { "outcome": "stale_citation_rate < 1e-2", "refutes": "NN-B-04 (wlasny warunek obalenia B)" },
+          { "outcome": "stale_citation_rate > 1e-1", "refutes": "oszacowanie sigma = 0.12/sqrt(rok) A jako zanizone" },
+          { "outcome": "M-B-04 > 1", "confirms": "atraktor LOOP-B-01 'kodeks jako dekoracja'" }
+        ],
+        "note": "jedyny eksperyment w zestawie niezalezny od kanalu z AGR-02; powinien byc wykonany pierwszy"
+      }
+    },
+
+    { "id": "CONF-F-01", "label": "FOUNDATIONAL", "stage": "S2/S4/S5", "title": "czym jest poprawnosc: czy istnieje odniesienie zewnetrzne",
+      "branches": [
+        { "id": "T", "owner": "B", "claim": "poprawnosc ma tresc wylacznie wzgledem Spec zaimportowanej z zewnatrz (Dec, per-podmiotowa rodzina Spec_p); wewnatrz systemu poprawnosc == reputacja (THM-B-13), punkt staly sie domyka", "applicability": "spor o wykladnie normy sklasyfikowanej undefined; norma implementation_defined konserwatywnie", "cost": "na fragmencie interpretacyjnym nie istnieje q, nie istnieje Brier score, nie istnieje petla korygujaca; wszystkie dzwignie LEV-C-01..06 traca tam zastosowanie; pozostaje wylacznie NON_LIQUET jako sygnal" },
+        { "id": "S/R", "owner": "C, A", "claim": "poprawnosc ma tresc jako zmienna stanu q planta, mierzalna czujnikiem out-of-band; pytanie jest instrumentacyjne, nie definicyjne", "applicability": "spor o fakt techniczny, Dec dostepne, pomiar powtarzalny", "cost": "na fragmencie interpretacyjnym q mierzone jest zanieczyszczone przez THM-B-13: referencja out-of-band jest sama produktem systemu, wiec mierzy zgodnosc z linia orzecznicza, nie trafnosc" }
+      ],
+      "selector": "klasyfikacja UB normy wg NN-B-08",
+      "missing_for_resolution": "pomiar udzialu spraw klasyfikowalnych jako defined przy klasyfikacji konserwatywnej; koszt O(n) jednorazowo, n ~ 1e4-1e5 (PRE-02)"
+    },
+    { "id": "CONF-F-02", "label": "FOUNDATIONAL", "stage": "S0..S8", "title": "jednostka analizy: slad pojedynczy kontra ensemble",
+      "branches": [
+        { "id": "per-trace", "owner": "A, B", "claim": "niezmienniki sa wlasnosciami pojedynczego sladu; naruszenie swiadkowane jednym prefiksem", "applicability": "wszedzie gdzie istnieje podmiot z roszczeniem, S1..S7", "cost": "koszt egzekucji skaluje sie z caseloadem: 550-820 s/sprawe [EST], przy 1e5 spraw/kwartal to 1.5-2.3e4 judge-hour/kwartal; dodatkowo PRE-01 zada n-krotnej zdolnosci przerobowej" },
+        { "id": "ensemble", "owner": "C", "claim": "niezmienniki sa wlasnosciami rodziny trajektorii; rank Ob, E >= 0, gamma_eff < g_crit nie sa wlasnosciami jednej sprawy", "applicability": "S8 i warstwa nadzorcza, gdzie przedmiotem oceny jest linia orzecznicza a nie sprawa", "cost": "zaden pojedynczy podmiot nie ma legitymacji do powolania sie na wlasnosc ensemble'u; mechanizm egzekucji narusza aksjomat wejsciowy PROTOCOL.md paragraf 0 przez wlasna konstrukcje, nie przez naduzycie" }
+      ],
+      "selector": "granica S7 | S8",
+      "unresolved_region": "nadzor dotykajacy spraw w toku (np. zmiana linii orzeczniczej stosowana do spraw niezakonczonych) - konflikt wraca w pelni",
+      "note": "podstawa nieargumentowana po obu stronach, UNARG-02; podanie argumentu przez ktorakolwiek strone przesunelo by konflikt do DECIDABLE"
+    },
+    { "id": "CONF-F-03", "label": "FOUNDATIONAL", "stage": "S2/S5/S6", "title": "bodziec czy jezyk: czy patologia jest wlasnoscia wyplat czy typu",
+      "branches": [
+        { "id": "incentive", "owner": "A, C", "claim": "zly atraktor jest rownowaga best-response osiagalna bez zlej woli; zmiana wyplat go usuwa", "applicability": "dzwignie niewymagajace wskazania autora kroku: LEV-C-02 (eta >= 0.1667/kw), LEV-C-03 (czujnik out-of-band), LEV-C-04 (tau_a 8 -> 4 kw)", "cost": "trzeba przyjac liczbe A: przy pelnej obserwowalnosci residuum e* = 40 pp pozostaje; petla nie domyka sie do zera nigdy" },
+        { "id": "language", "owner": "B", "claim": "korekta : Blame -> Dzialanie przy pustej dziedzinie NIE ISTNIEJE jako wyrazenie; twierdzenie o blame jest niewypowiadalne, nie tylko naruszone", "applicability": "dzwignie wymagajace atrybucji: LEV-C-01 (rho -> 0 dla wskazanego czujnika), LEV-C-05 (blameless postmortem), LEV-C-06 (publikacja pary M, demand-M)", "cost": "ranking dzwigni C przestaje obowiazywac jako uporzadkowanie: czesc dzwigni ma skutecznosc 0, a nie nizsza range, a ranking tego nie odroznia" }
+      ],
+      "selector": "czy dzwignia wymaga wskazania autora kroku",
+      "operational_consequence": "dzwignie z kolumny incentive sa skuteczne pod obiema galeziami i moga byc wdrozone bez rozstrzygniecia sporu; dzwignie z kolumny language sa warunkowe na NN-B-03, wiec kolejnosc jest wymuszona: NN-B-03 przed LEV-C-01, LEV-C-05, LEV-C-06. Zaden model suwerenny tej kolejnosci nie zawiera",
+      "evidence_for_language_branch": "FAIL-C-07 zamek histerezy: c_m 5.5 -> 30 RU nie przywraca rezimu R1 (obserwacja z symulacji C, nie z pomiaru; jako dowod bylaby cyrkularna)",
+      "missing_for_resolution": "wynik interwencji zmieniajacej wylacznie c_m przy stalym typie"
+    }
+  ],
+
+  "agreements": [
+    { "id": "AGR-01", "claim": "LEM-OBS: dla kazdej soczewki istnieje zmienna stanu rozstrzygajaca o dzialaniu petli korygujacej, ktora nie jest funkcja emitowanych obserwacji; przeszkoda jest nieinjektywnosc odwzorowania obserwacji, nie szum", "agents": ["A", "B", "C"], "kernels": { "A": "pary wyprowadzen o identycznym PublicOutput", "B": "jadro obs; E = admit bez lewego odwrotu", "C": "span{[1,-1]} dla x = [q, Theta], rank Ob = 1 < 2" }, "independence": "PARTIAL", "independence_note": "trzy rozlaczne jadra w trzech rozlacznych przestrzeniach stanu, ale wspolna metoda (deficyt rangi = nieinjektywnosc)", "label": "ARGUED" },
+    { "id": "AGR-01b", "claim": "uzycie autorytetu jest konstytutywnie nieobserwowalne", "agents": ["A", "B"], "not_claimed_by": "C", "independence": "NONE", "independence_note": "niewystarczalnosc dziedziny (A) i brak lewego odwrotu odwzorowania w te dziedzine (B) sa tym samym zdaniem; obalenie jednej przeslanki obala obie. Waga argumentacyjna 1, nie 2", "c_position": "C nie stawia tego twierdzenia: NN-C-05 zada raportowania M, RES-C-01 opisuje brak licznika jako luke instrumentacyjna; ALG-C-05 to deterministyczny aktuator z twardym nasyceniem, nie szum o zerowej sredniej", "label": "ARGUED", "weight": 1 },
+    { "id": "AGR-02", "claim": "kanal obserwacji ma dwie niezalezne przeszkody: bodzcowa (THM-A-05, binarna egzekucja S7) i wlasnosciowa (NN-C-02, rho > 0, break-even 16 kw wobec kadencji 16-24 kw)", "agents": ["A", "C"], "independence": "FULL", "label": "ARGUED", "merge_product": "CON-B-09 dodaje Effect.saturation, czyli ciagly wymiar egzekucji w S7 - dokladnie zmiane, ktora THM-A-05 wskazuje jako warunek konieczny uczynienia emisji pewnosci rownowaga. Usuwa jedna z dwoch przeszkod; druga pozostaje nietknieta" },
+    { "id": "AGR-03", "claim": "prog krytyczny obserwowalnosci lezy w okolicy 0.43-0.50", "agents": ["A", "C"], "values": { "A": "obs_crit = 0.500 z delta*a/rho_max", "C": "O = 0.427 przy g_1 = 1" }, "divergence_pct": 14.6, "independence": "PARTIAL", "label": "ARGUED", "prohibition": "NIE jest kursem wymiany. obs i O maja te sama normalizacje i role funkcyjna, ale rozne definicje; uzycie jako mianownika byloby FALSE-COMMENSURATION" },
+    { "id": "AGR-04", "claim": "zatajenie jest oplacalne dopoki (wykrywalnosc x sankcja) nie przekroczy prywatnego zysku, a wykrywalnosc jest ta zmienna, ktorej system nie mierzy", "agents": ["A", "C", "B"], "independence": "A==C NONE, B FULL", "independence_note": "A i C to ta sama nierownosc w dwoch notacjach (P(wykrycie)==phi, sankcja==c_m); B niezalezne, bo teza zachodzi nawet przy nieskonczonej sankcji", "label": "ARGUED", "argument_count": 2, "merge_product": "trzy soczewki obsluguja trzy rozne czynniki jednej nierownosci O > c_d/(c_m*phi): B podnosi phi, A podnosi c_m, C zeruje c_d" },
+    { "id": "AGR-05", "claim": "system ma nieredundowany komponent orzeczniczy o skoncentrowanym obciazeniu, a jego awaria jest skokowa", "agents": ["A", "B", "C"], "methods": { "A": "teoria kolejek, 1/(1-rho_q)^2, rho_q > 0.9", "B": "interfejs bez implementacji, deklaracja zgodnosci bez testu zgodnosci", "C": "hazard 0.025/kw, S* = 0.549-0.716 wobec SLO <= 0.15, spadek q o 43.5%" }, "independence": "FULL", "label": "ARGUED", "note": "najsilniejsza zbieznosc scalenia" },
+    { "id": "AGR-06", "claim": "defekt powstaly na S1/S2 nie jest naprawiany przez S6; instancja odwolawcza naprawia funkcje przejscia, nigdy wejscie", "agents": ["A", "B", "C"], "methods": { "A": "osiagalnosc w grafie przejsc", "B": "logika Hoare'a, sp(not I2, S3;S4;S5) = true", "C": "dekompozycja wariancji V = V_p + V_fact" }, "independence": "FULL", "label": "ARGUED", "merge_product": "MRG-03" },
+    { "id": "AGR-07", "claim": "budzet uwagi orzeczniczej jest mniejszy od przestrzeni przeszukiwania o 1e0-1e2 rzedu wielkosci, a niedobor przelewa sie na wydatek autorytetu", "agents": ["A", "B", "C"], "independence": "FULL", "label": "ARGUED", "units_commensurable": true, "exchange_rate": "1 judge-hour = 3600 s = 120 vgas (PRIM-B-14: 1 vgas ~ 30 s [EST])", "merged_obligation_cost": "550-820 s/sprawe [EST] = 3-11% RES-A-03, 1.5-2.3% RES-B-01; MIESCI SIE w budzecie" },
+    { "id": "AGR-08", "claim": "rama interpretacyjna dryfuje, a dryf jest nierejestrowany", "agents": ["A", "B", "C"], "relation": "ORTHOGONAL", "failure_modes": { "A": "lost update przy LWW", "B": "brak GC i inwalidacji; zmiana lamiaca bez podbicia wersji", "C": "integrator windup, nasycenie Theta = 1 w ~17 kw" }, "independence": "FULL", "label": "ARGUED", "merge_product": "NN-A-06 jest przeslanka wykonalnosci NN-C-04: Theta jest mierzalne tylko przy wersjonowanych znaczeniach" }
+  ],
+
+  "agreements_unargued": [
+    { "id": "UNARG-01", "claim": "kanoniczna os S0..S8 jest wlasciwa dekompozycja postepowania", "assumed_by": ["A", "B", "C"], "missing": "os pochodzi z PROTOCOL.md paragraf 1, gdzie jest podana, nie wyprowadzona; B musial dodac Sx-B-LINK, co jest przeslanka ze os jest niepelna" },
+    { "id": "UNARG-02", "claim": "sprawa jest wlasciwa jednostka analizy dla S1..S7", "assumed_by": ["A", "B", "C"], "missing": "trzy soczewki NIE zgadzaja sie co do jednostki, ale zadna nie argumentuje za swoja", "feeds_conflict": "CONF-F-02" },
+    { "id": "UNARG-03", "claim": "zjawiska z PROTOCOL.md paragraf 2 sa rozlaczne i wyczerpujace", "assumed_by": ["A", "B", "C"], "missing": "pokrycia zachodza na siebie: LOOP-C-03 mapowane na dwa klucze, LOOP-A-01 i LOOP-A-06 na jeden" },
+    { "id": "UNARG-04", "claim": "aksjomat wejsciowy protokolu o podmiocie zindywiduowanym", "assumed_by": ["A", "B", "C"], "missing": "podany jako dany w PROTOCOL.md paragraf 0; tylko B go formalizuje (Spec_p); jest przeslanka CONF-F-02, wiec nie jest neutralny", "feeds_conflict": "CONF-F-02" },
+    { "id": "UNARG-05", "claim": "horyzont 10-40 lat jest wlasciwym horyzontem oceny dryfu", "assumed_by": ["A", "B", "C"], "missing": "trzy rozne horyzonty (10.5 / 1.6 / 6.0 roku), zadnego uzasadnienia wyboru; horyzont determinuje ktory czlon kumulacji dominuje" }
+  ],
+
+  "drift": {
+    "commensurability": {
+      "verdict": "INCOMMENSURABLE",
+      "reason": [
+        "rozne nosniki: du jest wlasnoscia obserwatora, vbit wlasnoscia modelu, caseload-kwartal wlasnoscia planta",
+        "rozna algebra: vbit logarytmiczne, caseload-kwartal ekstensywne, du ograniczone z gory przez 100 z definicji",
+        "rozne progi o roznym pochodzeniu: zmiana znaku petli (50 du) / oszacowanie entropii (26 vbit [EST +-3.3]) / separatrysa ukladu dynamicznego (0.6975 caseload-kw)",
+        "deklaracja wlasna B: falsyfikowalnosc nie ma ceny rynkowej (NN-B-05)"
+      ],
+      "near_miss_rejected": { "pair": ["RES-A-09 obs", "RES-C-03 O"], "agreement_pct": 85.4, "why_rejected": "ta sama normalizacja i rola funkcyjna, rozne definicje; ponadto D_total C nie jest liczone w O, wiec kurs nie laczylby osi dryfu nawet gdyby byl poprawny", "recorded_as": "AGR-03, zgodnosc wynikow" },
+      "commensurable_sets": [
+        { "quantity": "uwaga orzecznicza", "members": ["RES-A-03 judge-hour", "RES-B-01 vgas", "RES-B-02 s", "RES-C-05 case-hour"], "rate": "1 judge-hour = 3600 s = 120 vgas", "uncertainty": "[EST] na 1 vgas = 30 s; kontrola wewnetrzna B przechodzi (RES-B-02/30 = RES-B-01); kontrola A-B: rozbieznosc 2-5x w granicach oszacowan" },
+        { "quantity": "czas kalendarzowy", "members": ["RES-A-04 dzien", "RES-B-10 dzien", "RES-B-12 dzien", "kwartal C"], "rate": "1 kwartal = 90 dni", "uncertainty": "dokladny (definicyjny)" },
+        { "quantity": "budzet strony", "members": ["RES-A-07 PLN", "RES-B-06 PLN"], "rate": "tozsamosc", "uncertainty": "kurs na vgas rozbiezny: 0.383 (z RES-A-03) kontra 0.24 (B) - dwa rozne rynki, nieuzgodnione" }
+      ],
+      "incommensurable_pairs": [
+        { "a": "du", "b": "vbit", "reason": "wlasnosc obserwatora kontra wlasnosc modelu; skala liniowa ograniczona kontra logarytmiczna" },
+        { "a": "du", "b": "caseload-kwartal", "reason": "wlasnosc obserwatora kontra stan integratora planta" },
+        { "a": "vbit", "b": "caseload-kwartal", "reason": "entropia specyfikacji kontra zapas bledu; brak metryki na przestrzeni orzeczen (NN-B-05)" },
+        { "a": "RES-B-11 vbit", "b": "RES-B-06 PLN", "reason": "deklaracja wlasna B" },
+        { "a": "RES-B-07 majesty_token", "b": "cokolwiek", "reason": "deklaracja wlasna B: zasob bez licznika nie ma kursu" },
+        { "a": "RES-B-09 blame", "b": "RES-B-06 PLN", "reason": "deklaracja wlasna B: odszkodowanie nie jest przeliczeniem winy" },
+        { "a": "RES-A-01 FG", "b": "RES-C-01 AU", "reason": "RIVAL co do skonczonosci i trybu wyczerpania (CONF-E-01)" },
+        { "a": "RES-A-09 obs", "b": "RES-C-03 O", "reason": "ta sama normalizacja i rola, rozne definicje" },
+        { "a": "RES-A-08 theta [1/rok]", "b": "RES-C-08 Theta [0,1]", "reason": "tempo kontra poziom; przeliczenie wymaga calkowania po szukanej trajektorii" },
+        { "a": "RES-A-06 instancja", "b": "NN-C-08 tau_a [kw]", "reason": "glebokosc rollbacku kontra opoznienie petli; rozne wymiary" },
+        { "a": "RES-C-06 S [0,1]", "b": "LOOP-A-07 rho_q", "reason": "udzial obciazenia kontra intensywnosc ruchu; zgodnosc rzedu, nie kurs" }
+      ]
+    },
+
+    "ledger_I_as_declared": {
+      "description": "22 wpisy przyznane przez agentow, bez testu przeslanki",
+      "verification": "rekonstrukcja formul zweryfikowana wobec wlasnych tabel agentow: C D(0)=0.345, D(8)=0.415, D(24)=0.707, D(40)=1.052 i udzialy 40.3/18.1/12.8 - zgodnosc dokladna; B sum_c=17.30, sum_kappa=3.89, D(0)=21.19 - zgodnosc dokladna; A D(0)=24.0, D(10)=49.2 - zgodnosc dokladna",
+      "D_total_0": { "A": { "value": 24.0, "unit": "du", "threshold": 50, "pct_of_threshold": 48.0 }, "B": { "value": 21.2, "unit": "vbit", "threshold": 26, "pct_of_threshold": 81.5 }, "C": { "value": 0.345, "unit": "caseload-kwartal", "threshold": 0.6975, "pct_of_threshold": 49.5 } },
+      "t_star": { "A": { "value": 10.3, "unit": "lata", "note": "A deklaruje 10.5; roznica to zaokraglenie, D_A(10.32) = 50.0" }, "B": { "value": 1.6, "unit": "lata" }, "C": { "value": 24, "unit": "kwartaly", "years": 6.0 } },
+      "N_star": { "A": 3, "B": 2, "C": 9 },
+      "binding_axis": "B",
+      "merge_quality": "FRAGILE",
+      "merge_quality_reason": "N* = 2 na osi wiazacej, rzad jednosci"
+    },
+
+    "ledger_II_after_premise_test": {
+      "description": "po zastosowaniu Testu P; 14 wpisow VOID-PREMISE-FAILED, 8 w mocy, plus koszty scalenia MRG-01 i MRG-03",
+      "voided": [
+        { "id": "CON-A-01", "cost": 12, "unit": "du", "conflict": "CONF-D-13" },
+        { "id": "CON-A-07", "cost": 3, "unit": "du", "conflict": "CONF-D-14" },
+        { "id": "CON-B-01", "cost": 3.2, "unit": "vbit", "conflict": "CONF-D-01" },
+        { "id": "CON-B-02", "cost": 2.0, "unit": "vbit", "conflict": "CONF-D-05" },
+        { "id": "CON-B-03", "cost": 1.6, "unit": "vbit", "conflict": "CONF-D-06" },
+        { "id": "CON-B-05", "cost": 4.5, "unit": "vbit", "conflict": "CONF-D-07", "note": "odwracalnosc none, najwyzsze g=0.25/rok" },
+        { "id": "CON-B-06", "cost": 2.4, "unit": "vbit", "conflict": "CONF-D-04" },
+        { "id": "CON-B-07", "cost": 1.2, "unit": "vbit", "conflict": "CONF-D-08" },
+        { "id": "CON-C-02", "cost": 0.060, "unit": "caseload-kwartal", "conflict": "CONF-D-02" },
+        { "id": "CON-C-03", "cost": 0.045, "unit": "caseload-kwartal", "conflict": "CONF-D-05" },
+        { "id": "CON-C-04", "cost": 0.025, "unit": "caseload-kwartal", "conflict": "CONF-D-11" },
+        { "id": "CON-C-05", "cost": 0.050, "unit": "caseload-kwartal", "conflict": "CONF-D-12" },
+        { "id": "CON-C-07", "cost": 0.075, "unit": "caseload-kwartal", "conflict": "CONF-D-01", "note": "odwracalnosc none, 40.3% dryfu C, kumulacja wykladnicza h=16 kw" },
+        { "id": "CON-C-09", "cost": 0.030, "unit": "caseload-kwartal", "conflict": "CONF-D-10" }
+      ],
+      "voided_totals": { "A": { "value": 15, "unit": "du", "pct_of_declared": 62.5 }, "B": { "value": 15.0, "unit": "vbit", "pct_of_declared": 86.7 }, "C": { "value": 0.285, "unit": "caseload-kwartal", "pct_of_declared": 82.6 } },
+      "in_force": [
+        { "id": "CON-A-03", "cost": 5, "unit": "du", "stage": "S4", "real_addressee": "C", "forced_by": "NN-C-08 => not FIFO: w kolejce o stalej przepustowosci FIFO daje identyczny rozklad czasu oczekiwania wszystkim klasom" },
+        { "id": "CON-A-05", "cost": 4, "unit": "du", "stage": "S6", "real_addressee": "C", "forced_by": "NN-C-08 + stala zdolnosc instancji odwolawczej" },
+        { "id": "CON-B-04", "cost": 0.8, "unit": "vbit", "stage": "S6", "real_addressee": "A", "forced_by": "NN-A-10 predykat odwolania d_max < 1 => d_max >= 1 => at-least-once", "note": "skok progowy do 4.0 vbit przy mean_retries_per_case > 1.5, t ~ 4 lata" },
+        { "id": "CON-B-08", "cost": 0.6, "unit": "vbit", "stage": "S4", "real_addressee": "C", "forced_by": "INV-C-07, RES-C-06, FAIL-C-05", "rider": "INV-A-10 - panel heterogeniczny" },
+        { "id": "CON-B-09", "cost": 1.0, "unit": "vbit", "stage": "S7", "real_addressee": "C", "forced_by": "FAIL-C-02, NN-C-05, ALG-C-05" },
+        { "id": "CON-C-01", "cost": 0.020, "unit": "caseload-kwartal", "stage": "S2", "real_addressee": "A + protokol", "forced_by": "INV-A-03 + PROTOCOL.md paragraf 1", "required_correction": "predykat odwolania zaciesniony z [0.7, 1.4] do [0.7, 1.027] kwartalu" },
+        { "id": "CON-C-06", "cost": 0.015, "unit": "caseload-kwartal", "stage": "S6", "real_addressee": "B", "forced_by": "PROTOCOL.md paragraf 6 + slownik INV-*" },
+        { "id": "CON-C-08", "cost": 0.025, "unit": "caseload-kwartal", "stage": "S8", "real_addressee": "A", "forced_by": "RES-A-02", "note": "forma zwiazana, nigdy wejscie petli sterowania (NN-C-07)" }
+      ],
+      "merge_costs": [
+        { "id": "MRG-01", "title": "wspolny kanal obserwacji jako awaria wspolnej przyczyny", "cost": 10, "unit": "du", "accumulation": "stala", "derivation": "NN-A-03 zastosowane refleksyjnie do kanalu: P_joint = rho*p + (1-rho)*p^n; przy n=1 P = p = 0.10 [EST A], wiec obs <= 0.90", "reversibility": "czesciowa: n=2 heterogeniczne daje P = 0.073 => 7.3 du; podloga rho*p = 7 du nieusuwalna", "known_understatement": "analogicznego kosztu na osiach B i C nie ksieguje, bo nie umiem go wyrazic bez kursu ktorego paragraf 1 zakazuje" },
+        { "id": "MRG-02", "title": "koszt czasowy zobowiazan scalonych", "cost": "550-820 s/sprawe [EST]", "unit": "s", "booked_in": "tablica zasobow, nie D_total - zuzywa uwage, nie falsyfikowalnosc", "verdict": "miesci sie: 3-11% RES-A-03, 1.5-2.3% RES-B-01" },
+        { "id": "MRG-03", "title": "nieodsaczalna skladowa zapasu bledu", "unit": "caseload-kwartal", "booked_in": "osobne ograniczenie czasowe, nie D_total - nie jest ustepstwem", "binding": true }
+      ],
+      "D_total_0": { "A": { "value": 19.0, "unit": "du", "composition": "9.0 ustepstwa + 10.0 MRG-01", "threshold": 50, "pct_of_threshold": 38.0 }, "B": { "value": 2.4, "unit": "vbit", "threshold": 26, "pct_of_threshold": 9.2 }, "C": { "value": 0.060, "unit": "caseload-kwartal", "threshold": 0.6975, "pct_of_threshold": 8.6 } },
+      "formulas": { "A": "D_A(t) = 19 + 0.6*t [du, t w latach]; rodziny ordering i replay rozlaczne => czlon sprzezen = 0", "B": "D_B(t) = J(t) + 0.6 + 1.0*(1 + 0.05t) [vbit]; J = 0.8 dla t < 4, 4.0 dla t >= 4; zadna para sprzezona nie przezyla => sum_kappa = 0", "C": "D_C(t) = 0.060 + 0.000725*t [caseload-kw, t w kwartalach]; zaden czlon wykladniczy nie przezyl" },
+      "t_star": { "A": { "value": 51.7, "unit": "lata" }, "B": { "value": 410, "unit": "lata", "note": "~4.1e2, poza horyzontem modelu; os nie wiaze" }, "C": { "value": 879, "unit": "kwartaly", "years": 220, "note": "poza horyzontem; os nie wiaze" } },
+      "N_star": { "A": 4, "B": 10, "C": 16 },
+      "binding_constraint": "MRG-03",
+      "merge_quality": "FRAGILE",
+      "merge_quality_reason": "kryterium N* NIE uruchamia FRAGILE w Ksiedze II (4/10/16 nie jest rzedu jednosci), ale wiazacym ograniczeniem przestaje byc jakakolwiek ksiega ustepstw: staje sie nim MRG-03 o horyzoncie 6.6-34.5 roku [EST], krotszym niz kazde t* ustepstwowe, i BEZ PREDYKATU ODWOLANIA. Ponadto podstawa (a) z Ksiegi I obowiazuje kazdego kto odrzuci choc jedno z uniewaznien",
+      "quality_revocation_condition": "scalenie przestaje byc FRAGILE wtedy i tylko wtedy gdy JEDNOCZESNIE przyjete zostana wszystkie 14 uniewaznien przeslanki ORAZ MRG-03 zostanie obalone, w praktyce pomiarem phi_input < 0.05 (CONF-E-03)"
+    },
+
+    "binding_rule": "Osia wiazaca jest ta o najmniejszym t* mierzonym w latach. Regula jest legalna, bo nie przelicza jednostek - porownuje momenty przekroczenia progow, z ktorych kazdy jest zdefiniowany we wlasnej jednostce. Jest to porownanie DAT, nie KOSZTOW. Ograniczenia niebedace ustepstwami (MRG-*) wchodza do porownania na rowni, jezeli maja wyznaczony t*",
+
+    "MRG_03": {
+      "title": "nieodsaczalna skladowa zapasu bledu",
+      "derivation": [
+        "1. dekompozycja E = E_input + E_transition",
+        "2. S6 nie drenuje E_input - dwa niezalezne dowody: THM-A-01 (brak krawedzi S6->S2, floorStage=S3 powyzej zrodla defektow) i THM-B-07 (sp(not I2, S3;S4;S5) = true; apelacja to rerun na tym samym AST)",
+        "3. kalibracja nu z liczb C: INV-C-02 dE/dt <= nu(1-q); przy pelnym maskowaniu O=0 wiec dren znika, a C podaje przekroczenie E_crit=0.6975 w 8.7 kw. nu = E_crit/(8.7*(1-q)); q=0.269 => nu=0.110/kw, q=0.670 => nu=0.243/kw",
+        "4. tempo w dobrym atraktorze A_praca (q=0.670, masking_rate=0.000, O=0.600): dE_input/dt = nu * 0.330 * phi_input, phi_input w [0.14, 0.33] [EST]"
+      ],
+      "grid": [
+        { "nu": 0.110, "phi_input": 0.14, "rate": 0.00507, "quarters_to_E_crit": 138, "years": 34.5 },
+        { "nu": 0.110, "phi_input": 0.33, "rate": 0.01195, "quarters_to_E_crit": 58, "years": 14.6 },
+        { "nu": 0.243, "phi_input": 0.14, "rate": 0.01123, "quarters_to_E_crit": 62, "years": 15.5 },
+        { "nu": 0.243, "phi_input": 0.33, "rate": 0.02646, "quarters_to_E_crit": 26, "years": 6.6 }
+      ],
+      "result": "26-138 kwartalow = 6.6-34.5 roku [EST], w DOBRYM atraktorze przy ZEROWYM endogennym maskowaniu",
+      "why_merge_product": "C ma integrator ale nie ma dowodu o braku krawedzi S6->S2 (nie modeluje grafu przejsc); A i B maja ten dowod ale nie maja integratora ani E_crit",
+      "no_revocation_predicate": true,
+      "escape_routes": [
+        "wykazanie phi_input < 0.05 (CONF-E-03) - przesuwa horyzont poza 90 lat [EST]",
+        "wskazanie istniejacej procedury zwracajacej kontrole do S2 z czestoscia >= czestosci powstawania defektow wejsciowych - obala jednoczesnie THM-A-01 i THM-B-07",
+        "uczynienie wyzwalacza NN-B-06 sprawdzalnym w S3 - wymaga obalenia THM-B-08"
+      ],
+      "side_effect_opposite_sign": "gamma_eff = gamma_0 * O * (1 - phi_input) w [0.1205, 0.1547] /kw zamiast 0.1799; wykorzystanie marginesu opoznienia spada z 97.5% do 65-84% wobec g_crit(8) = 0.1845; ryzyko chatteringu FAIL-C-04 maleje"
+    }
+  },
+
+  "reversibility_test": {
+    "verdict": "LOSSY",
+    "per_agent": {
+      "A": { "verdict": "LOSSLESS", "in_force": ["CON-A-03 (full)", "CON-A-05 (full)"], "void_no_residue": ["CON-A-01", "CON-A-07"], "external_weakening": "brak" },
+      "B": { "verdict": "LOSSY", "loss": "L1", "in_force": ["CON-B-04 (partial)", "CON-B-08 (full)", "CON-B-09 (full)"], "note": "CON-B-05 o odwracalnosci none zostalo uniewaznione, wiec B nie traci nic nieodwracalnie z tego tytulu" },
+      "C": { "verdict": "LOSSLESS po korekcie L2", "in_force": ["CON-C-01 (full)", "CON-C-06 (full)", "CON-C-08 (full)"], "note": "CON-C-07 o odwracalnosci none zostalo uniewaznione, wiec nie zostalo zastosowane" }
+    },
+    "losses": [
+      { "id": "L1", "agent": "B", "what": "semantyka dokladnie-raz dla spraw rozstrzygnietych w rezimie at-least-once; tozsamosc oparta na caseKey, brak informacji ktore z wielokrotnych rozstrzygniec jest kanoniczne", "size": "0.8 vbit dla t < 4 lata; 4.0 vbit po skoku progowym, i skoku nie cofa wycofanie ustepstwa", "removable": false },
+      { "id": "L2", "agent": "C", "what": "rozdzielczosc kryterium g_crit(tau_a): zadeklarowana tolerancja mediany czasu rundy [0.7, 1.4] kwartalu dopuszcza tau_a do 11.2 kw, przy ktorym g_crit(11.2) = 0.1314 < gamma_eff = 0.1799, wiec werdykt INV-C-03 zmienia znak WEWNATRZ tolerancji odwracalnosci", "computation": "g_crit(tau) > 0.1799 <=> sin(pi/(4tau+2)) > 0.08995 <=> 4tau + 2 < 34.88 <=> tau < 8.22 kw, czyli rozciagniecie rundy o max +2.7%, nie +40%", "size": "usuwalna", "removable": true, "fix": "zaciesnienie predykatu odwolania CON-C-01 do [0.7, 1.027] kwartalu (PRE-04)" },
+      { "id": "L3", "agent": "scalenie", "what": "pojemnosc kanalu obserwacji: awaria wspolnej przyczyny trzech petli naprawczych dzielacych jeden czujnik", "size": "10 du; 7.3 du przy n=2 heterogenicznym; podloga 7 du nieusuwalna przy dowolnym n (NN-A-03)", "removable": "czesciowo" }
+    ],
+    "irremovable_total": "L1 (fragment historyczny B) oraz podloga 7 du z L3"
+  },
+
+  "nonnegotiables_status": {
+    "summary": { "total": 26, "intact": 26, "formally_refuted": 0, "conditioned": 4 },
+    "A": [
+      { "id": "NN-A-01", "status": "INTACT" },
+      { "id": "NN-A-02", "status": "INTACT", "note": "nietkniete przez CON-A-03 (atrybucyjnosc zachowana)" },
+      { "id": "NN-A-03", "status": "INTACT", "note": "zastosowane refleksyjnie do kanalu obserwacji => MRG-01; rider do Panel<n>; parametr rho do zmierzenia w CONF-E-02" },
+      { "id": "NN-A-04", "status": "INTACT", "note": "przewidywany konflikt z soczewka typow nie istnieje (CONF-D-03); wykonalne dopiero po zmianie S7 przez CON-B-09", "conditioned_on": "CON-B-09 (stopniowana egzekucja S7)" },
+      { "id": "NN-A-05", "status": "INTACT", "note": "SAME z NN-B-04" },
+      { "id": "NN-A-06", "status": "INTACT", "note": "SAME z NN-B-04; przeslanka wykonalnosci NN-C-04" },
+      { "id": "NN-A-07", "status": "INTACT", "note": "obala przeslanki CON-B-01, CON-B-02, CON-C-03, CON-C-07" },
+      { "id": "NN-A-08", "status": "INTACT", "note": "przeslanka pomiaru M dla NN-C-05" },
+      { "id": "NN-A-09", "status": "INTACT", "note": "CON-A-07 uniewaznione jako tresciowo puste wobec NN-A-09" },
+      { "id": "NN-A-10", "status": "INTACT", "note": "adresat CON-B-04" }
+    ],
+    "B": [
+      { "id": "NN-B-01", "status": "INTACT", "note": "WZMOCNIONE: NN-A-07 zada tego samego z innej soczewki; CON-B-01 uniewaznione" },
+      { "id": "NN-B-02", "status": "INTACT", "note": "SAME z NN-C-01 co do proby audytowej; CON-B-07 uniewaznione" },
+      { "id": "NN-B-03", "status": "INTACT", "note": "niesprzeczne z NN-C-03 (CONF-D-15); przeslanka wykonalnosci NN-C-05 i LEV-C-01/05/06" },
+      { "id": "NN-B-04", "status": "INTACT", "note": "SAME z NN-A-05 + NN-A-06 + INV-A-08; CON-B-03 uniewaznione" },
+      { "id": "NN-B-05", "status": "INTACT", "note": "obala przewidywanie A o sumie typow (CONF-D-03); CON-B-02 uniewaznione" },
+      { "id": "NN-B-06", "status": "INTACT", "note": "jedyna krawedz naprawy wejscia w scalonym modelu; wyzwalacz niesprawdzalny wg THM-B-08 tego samego agenta", "conditioned_on": "obalenie THM-B-08 albo inny wyzwalacz" },
+      { "id": "NN-B-07", "status": "INTACT", "note": "galaz T w CONF-F-01" },
+      { "id": "NN-B-08", "status": "INTACT", "note": "selektor galezi CONF-F-01; warunek zewnetrzny PRE-02" }
+    ],
+    "C": [
+      { "id": "NN-C-01", "status": "INTACT", "note": "SAME z proba audytowa NN-B-02; obala przeslanke CON-B-07" },
+      { "id": "NN-C-02", "status": "INTACT", "note": "druga z dwoch niezaleznych przeszkod kanalu (AGR-02); BEZ ROZWIAZANIA w scaleniu" },
+      { "id": "NN-C-03", "status": "INTACT", "note": "niesprzeczne z NN-B-03 i z sankcja A: c_d != c_m (CONF-D-15)" },
+      { "id": "NN-C-04", "status": "INTACT", "note": "wykonalne dzieki NN-A-06; Theta zachowane, CON-C-05 uniewaznione", "conditioned_on": "NN-A-06 (version vectors)" },
+      { "id": "NN-C-05", "status": "INTACT", "note": "wykonalne dzieki NN-B-03 + NN-A-08 + INV-A-06", "conditioned_on": "NN-B-03" },
+      { "id": "NN-C-06", "status": "INTACT", "note": "instrument pomiaru rho dla CONF-E-02 i phi_input dla CONF-E-03" },
+      { "id": "NN-C-07", "status": "INTACT", "note": "CON-C-08 wylacznie w formie zwiazanej" },
+      { "id": "NN-C-08", "status": "INTACT", "note": "wymusza CON-A-03 i CON-A-05; jointly infeasible z INV-C-07 przy rho_q > 0.9 => PRE-01; przestaje byc pilne po korekcie gamma_eff (CONF-D-16)" }
+    ],
+    "refuted_non_nn_claims": [
+      { "claim": "soczewka typow zazada sumy typow zamiast liczby", "author": "A", "refuted_by": "NN-B-05 + INV-B-07", "where": "CONF-D-03" },
+      { "claim": "soczewka sterowania potraktuje niezmienniki jako miekkie", "author": "A", "refuted_by": "minimalny zbior NN C sklada sie z predykatow twardych", "where": "CONF-D-04" },
+      { "claim": "soczewka konsensusowa zdefiniuje fakt jako zgode kworum", "author": "B", "refuted_by": "teza A + NN-A-07", "where": "CONF-D-05" },
+      { "claim": "soczewka sterownicza zamodeluje majesty jako szum o zerowej sredniej i zaprojektuje kompensator", "author": "B", "refuted_by": "ALG-C-05 deterministyczny aktuator z twardym nasyceniem; LOOP-C-05 znak +", "where": "AGR-01" },
+      { "claim": "FLP zabrania czekania na dowod (przeslanka CON-B-01)", "author": "B", "refuted_by": "hipotezy FLP n>=2, f>=1 nie zachodza przy n=1", "where": "CONF-D-01" },
+      { "claim": "bez metryki na Judgment nie ma gradientu (przeslanka CON-B-05)", "author": "B", "refuted_by": "konstrukcja q_hat z metryki dyskretnej i agregacji po N", "where": "CONF-D-07" },
+      { "claim": "regulator wymaga zbioru dopuszczalnego o niepustym wnetrzu (przeslanka CON-B-06)", "author": "B", "refuted_by": "zbior minimalny C zawiera rank=2, rho=0, c_d=0", "where": "CONF-D-04" },
+      { "claim": "soczewka R wymaga liveness (przeslanka CON-C-07)", "author": "C", "refuted_by": "NN-A-07, RES-A-01, PRIM-A-11", "where": "CONF-D-01" },
+      { "claim": "dowody safety wymagaja punktu finalnosci (przeslanka CON-C-02)", "author": "C", "refuted_by": "domknietosc safety na prefiksy; LOOP-A-03, THM-B-10", "where": "CONF-D-02" }
+    ]
+  },
+
+  "external_preconditions": [
+    { "id": "PRE-01", "condition": "capacity >= n * capacity_0, n >= 2", "source": "INV-C-07 and NN-A-03 and rho_q > 0.9", "failure_effect": "kolejka niestabilna, rho_q >= 1.8", "satisfiable": true },
+    { "id": "PRE-02", "condition": "inwentarz pozycji UB w korpusie, O(n) jednorazowo, n ~ 1e4-1e5", "source": "NN-B-08", "failure_effect": "brak selektora galezi CONF-F-01; obie galezie stosowane rownolegle", "satisfiable": true },
+    { "id": "PRE-03", "condition": "drugi, heterogeniczny kanal obserwacji", "source": "MRG-01 + NN-A-03", "failure_effect": "koszt kanalu pozostaje 10 du zamiast 7.3 du", "satisfiable": true },
+    { "id": "PRE-04", "condition": "zaciesnienie predykatu odwolania CON-C-01 do [0.7, 1.027] kwartalu", "source": "test odwracalnosci, strata L2", "failure_effect": "werdykt INV-C-03 odwracalny wewnatrz tolerancji", "satisfiable": true },
+    { "id": "PRE-05", "condition": "budzet Theta(n^2 * SAT) dla INV-B-02, czyli 1e8-1e10 wywolan", "source": "THM-B-05, RES-B-04", "failure_effect": "zobowiazanie niesfinansowane; LOOP-B-04 bez tlumienia", "satisfiable": false, "note": "jedyny warunek niespelnialny w znanym budzecie; zapisany jako nieusuwalny dlug scalenia, nie jako zawezenie zakresu" }
+  ],
+
+  "assumptions": [
+    { "id": "ASSUMPTION-M-01", "text": "Test P ma zakres zamkniety do trzech soczewek. Przy dolaczeniu czwartej przeslanka moze odzyc; wtedy wpis wraca do ksiegi bez zmiany tresci. Warunek podany przed poznaniem wyniku, wiec nie jest SCOPE-ESCAPE" },
+    { "id": "ASSUMPTION-M-02", "text": "Test P dziala tylko w jedna strone (uniewaznia wpisy, nie dodaje ich), wiec systematycznie zaniza D_total. Kontrola: podane sa obie ksiegi, a MRG-01 i MRG-03 dokladaja koszty ktorych nie zaksiegowal zaden agent" },
+    { "id": "ASSUMPTION-M-03", "text": "MRG-01 zaksiegowane wylacznie na osi A (du), bo du jest jedyna jednostka mierzaca pojemnosc kanalu obserwacji. Analogiczny koszt na osiach B i C jest znanym niedoszacowaniem" },
+    { "id": "ASSUMPTION-M-04", "text": "nu w MRG-03 wyprowadzone z wlasnych liczb C (E_crit = 0.6975, przekroczenie w 8.7 kw przy pelnym maskowaniu) przy dwoch skrajnych wartosciach q z atraktorow; przedzial [0.110, 0.243] /kw jest [EST]" },
+    { "id": "ASSUMPTION-M-05", "text": "1 caseload-kwartal = 1e5 spraw - przejete z model_units agenta C jako [ASSUMPTION] tamze" }
+  ],
+
+  "antipattern_audit": {
+    "AVERAGING": "nie wystapil. Zaden konflikt nie zostal rozwiazany przez usrednienie parametrow. RIVAL o force_gas (CONF-E-01) zachowuje trzy warianty jako warianty, nie ich srednia. Konflikty o rho (CONF-E-02) i phi_input (CONF-E-03) zachowuja przedzialy oszacowan bez uzgadniania punktu",
+    "AUTHORITY-CUT": "nie wystapil. Kazde z 17 rozstrzygniec DECIDABLE niesie argument formalny z cytatem z artefaktu strony przeciwnej. Trzy konflikty FOUNDATIONAL pozostawione nierozstrzygniete z obiema galeziami i cena kazdej, mimo ze rozstrzygniecie ich uproscilo by scalona specyfikacje",
+    "VOCABULARY-PEACE": "nie wystapil, i zostal jawnie odwrocony w AGR-01b: zgodnosc A i B po ujednoliceniu slownika policzona jako JEDEN argument, nie dwa. SAME orzekane wylacznie po kryterium zachowania (warunek poprawnosci, tryb awarii, zlozonosc)",
+    "SILENT-WEAKENING": "nie wystapil. Wszystkie 8 oslabien obowiazujacych wymienione w MERGED-SPEC paragraf 6 z jednostka i etapem. Koszty scalenia MRG-01, MRG-02, MRG-03 zaksiegowane osobno, mimo ze zaden agent ich nie zglosil",
+    "SCOPE-ESCAPE": "nie wystapil. PRE-05 (budzet Theta(n^2*SAT) niespelnialny) zapisany jako nieusuwalny dlug, nie przeniesiony poza zakres. Zamkniecie zakresu Testu P do trzech soczewek podane jako ASSUMPTION-M-01 przed zastosowaniem"
+  },
+
+  "termination_criteria": {
+    "every_rival_labelled": true,
+    "every_decidable_resolved_with_proof": true,
+    "every_empirical_has_falsifying_experiment": true,
+    "every_foundational_has_applicability_conditions": true,
+    "drift_ledger_reports_D0_tstar_Nstar": true,
+    "no_nn_bypassed_without_formal_refutation": true,
+    "reversibility_test_done_and_losses_enumerated": true,
+    "hidden_disagreement": false
+  },
+
+  "artifacts": [
+    "docs/justice-as-code/consensus/README.md",
+    "docs/justice-as-code/consensus/MERGED-SPEC.md",
+    "docs/justice-as-code/consensus/CONFLICTS.md",
+    "docs/justice-as-code/consensus/DRIFT-LEDGER.md",
+    "docs/justice-as-code/consensus/AGREEMENTS.md",
+    "docs/justice-as-code/consensus/merged.json"
+  ]
+}
