@@ -53,6 +53,15 @@ Post–Turn 10: **decreasing certainty** by design.
 
 See [SUGGESTIONS.md](./SUGGESTIONS.md) and [docs/](./docs/).
 
+## MCP server
+
+The moral engine (turns, dilemma variants, philosophers, collective/individuated
+decision simulation, the stereo snapshot) is exposed as a remote [MCP](https://modelcontextprotocol.io)
+server at `POST /api/mcp` — point any MCP-compatible connector (Gemini
+Enterprise's "Add MCP Server", Claude, etc.) at `https://<your-deployment>/api/mcp`.
+Every tool wraps a pure function from `src/lib/moral/`; the server is stateless
+(no accounts, no database) — see `src/lib/mcp/server.ts`.
+
 ## Języki i własny DSL
 
 Aplikacja jest rozwijana przede wszystkim w **TypeScript/TSX**, z warstwą stylów w
