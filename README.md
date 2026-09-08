@@ -62,6 +62,13 @@ Enterprise's "Add MCP Server", Claude, etc.) at `https://<your-deployment>/api/m
 Every tool wraps a pure function from `src/lib/moral/`; the server is stateless
 (no accounts, no database) — see `src/lib/mcp/server.ts`.
 
+## Języki i własny DSL
+
+Aplikacja jest rozwijana przede wszystkim w **TypeScript/TSX**, z warstwą stylów w
+**CSS**, migracjami w **SQL** oraz skryptami narzędziowymi w **JavaScript**.
+Propozycja stworzenia małego, bezpiecznego języka dziedzinowego do opisywania
+dylematów moralnych znajduje się w [docs/CUSTOM_LANGUAGE.pl.md](./docs/CUSTOM_LANGUAGE.pl.md).
+
 ## Skill family
 
 - **V2 (dla Ciebie — zakres i błędy systemowe, bez kodu):** [skills-v2/](./skills-v2/)
