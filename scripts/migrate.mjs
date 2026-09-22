@@ -22,20 +22,22 @@ if (!databaseUrl) {
 
 const migrationsDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "migrations");
 const pool = new Pool({ connectionString: databaseUrl });
+const client = await pool.connect();
 
 try {
-  await pool.query(
+  // Session lock: concurrent builds against one database apply each file exactly once.
+  await client.query("select pg_advisory_lock(hashtext('migrations'))");
+  await client.query(
     "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
   );
 
   const files = (await readdir(migrationsDir)).filter((name) => name.endsWith(".sql")).sort();
-  const { rows: done } = await pool.query("select name from _migrations");
+  const { rows: done } = await client.query("select name from _migrations");
   const doneNames = new Set(done.map((row) => row.name));
 
   for (const name of files) {
     if (doneNames.has(name)) continue;
     const sql = await readFile(path.join(migrationsDir, name), "utf8");
-    const client = await pool.connect();
     try {
       await client.query("begin");
       await client.query(sql);
@@ -45,12 +47,12 @@ try {
     } catch (err) {
       await client.query("rollback");
       throw err;
-    } finally {
-      client.release();
     }
   }
 
   console.log("[migrate] up to date.");
 } finally {
+  await client.query("select pg_advisory_unlock(hashtext('migrations'))").catch(() => {});
+  client.release();
   await pool.end();
 }
