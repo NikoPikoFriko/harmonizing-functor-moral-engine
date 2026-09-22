@@ -25,7 +25,9 @@ export function normalizeMatrix(m: ValueMatrix): ValueMatrix {
   for (const k of keys) {
     out[k] = Math.round((Math.max(0, m[k]) / sum) * 100);
   }
-  // Largest weight is always >= 17, so it absorbs negative drift without clamping.
+  // Absorb rounding drift into the largest weight: it is always >= 17 when the
+  // input has any positive weight, so it can take negative drift without
+  // clamping (utility can be 0 and would silently leave the sum at 101).
   const s2 = keys.reduce((a, k) => a + out[k], 0);
   if (s2 !== 100) {
     const largest = keys.reduce((best, k) => (out[k] > out[best] ? k : best), keys[0]);
