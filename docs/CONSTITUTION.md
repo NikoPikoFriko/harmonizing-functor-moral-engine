@@ -70,9 +70,9 @@ Neither pole is romanticized. Failure modes of both are first-class content.
 - Real-world transfer reports ≥ 30%  
 - Still groundbreaking in 2028?
 
-## App status (Grok Build)
+## App status
 
-Interactive lab is implemented (TanStack Start + React + Tailwind):
+Interactive lab is implemented (TanStack Start + React + Tailwind, mirrored from Grok Build):
 
 - Dark void UI, dual-pane engines, matrix builder, variants, federation charter, JSON export
 - State persisted locally (`zustand` + `localStorage`)
@@ -93,7 +93,7 @@ See [SUGGESTIONS.md](./SUGGESTIONS.md) for issues, labels, topics, and monorepo 
 
 ## License
 
-TBD — recommend MIT or Apache-2.0 for public lab code; Constitution text CC-BY-4.0 optional.
+MIT — see [LICENSE](../LICENSE). Constitution text is part of the repo under the same license.
 
 ---
 

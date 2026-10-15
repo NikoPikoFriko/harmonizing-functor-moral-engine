@@ -108,13 +108,15 @@ release/v0.3  # Constitution-aligned tag
 - Don’t ship “correct answers” as product features
 - Don’t expand post–Turn 10 without labeling **open / decreasing certainty**
 
-## 10. Immediate next commit (when source lands)
+## 10. Landed checklist (source is in this repo — archive of the original bootstrap)
 
-1. Push Grok Build app tree (`src/`, `package.json`, `vite.config.ts`)
-2. Add MIT LICENSE
-3. Add CI workflow
-4. Open the 12 seed issues
-5. Tag `v0.3-constitution`
+Original bootstrap items, now done — kept for history:
+
+1. ~~Push Grok Build app tree (`src/`, `package.json`, `vite.config.ts`)~~ — done, app runs here (`npm run dev`, `typecheck`, `build`)
+2. ~~Add MIT LICENSE~~ — done ([LICENSE](./LICENSE))
+3. ~~Add CI workflow~~ — done ([`.github/workflows/ci.yml`](./.github/workflows/ci.yml): `typecheck` + `build` + Playwright smoke)
+4. Open the 12 seed issues — still open, see §4 titles
+5. Tag `v0.3-constitution` — still open, see §5
 
 ---
 

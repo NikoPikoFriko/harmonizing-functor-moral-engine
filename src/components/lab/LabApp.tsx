@@ -9,7 +9,7 @@ import {
 } from "@/lib/moral/content";
 import { divergenceScore, matrixSummary } from "@/lib/moral/engines";
 import { useLabStore } from "@/lib/moral/store";
-import type { DilemmaVariant, PhilosopherId, TurnId } from "@/lib/moral/types";
+import type { DilemmaVariant, PhilosopherId } from "@/lib/moral/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";

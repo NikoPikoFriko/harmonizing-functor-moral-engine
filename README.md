@@ -51,7 +51,8 @@ Post–Turn 10: **decreasing certainty** by design.
 
 ## Engine maturity
 
-See [SUGGESTIONS.md](./SUGGESTIONS.md) and [docs/](./docs/).
+See [SUGGESTIONS.md](./SUGGESTIONS.md), [docs/CONSTITUTION.md](./docs/CONSTITUTION.md),
+[docs/TURNS.md](./docs/TURNS.md) and [docs/](./docs/).
 
 ## MCP server
 
@@ -81,6 +82,13 @@ Ready-to-paste all-core pack: [docs/gamma/](./docs/gamma/) (vision · teacher ·
 ## Stereo-cognitive meta-game
 
 See [docs/META_GRA_STEREOKOGNICYJNA.md](./docs/META_GRA_STEREOKOGNICYJNA.md) (PL: [docs/META_GRA_STEREOKOGNICYJNA.pl.md](./docs/META_GRA_STEREOKOGNICYJNA.pl.md)).
+
+## Justice-as-Code
+
+Multi-track modeling of justice systems as a code base (sovereign agent tracks + consensus layer):
+[docs/justice-as-code/](./docs/justice-as-code/) — protocol
+[docs/justice-as-code/PROTOCOL.md](./docs/justice-as-code/PROTOCOL.md),
+consensus [docs/justice-as-code/consensus/](./docs/justice-as-code/consensus/).
 
 ## Evolution cycles
 
